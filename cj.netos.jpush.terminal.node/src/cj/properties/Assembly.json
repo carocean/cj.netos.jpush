@@ -1,0 +1,39 @@
+{
+	entryPoint : {
+		plugins: [
+
+		],
+		activators: [
+		]
+	},
+	assemblyInfo : {
+		assemblyTitle : "terminal-node",
+		assemblyResource:"site=/site;http.root=$(site)/web;http.jss=$(site)/jss/http;ws.jss=$(site)/jss/ws",
+		assemblyDescription : "推送中心终端节点",
+		assemblyConfiguration : "",
+		assemblyCompany : "cj工作室",
+		assemblyProduct : "cj.netos.jpush.node",
+		assemblyCopyright : "Copyright   2011",
+		assemblyTrademark : "",
+		assemblyCulture : "",
+		guid : "1A32BE41-E3AE-42AC-B4B9-D6E0B2A3EB1E",
+		assemblyVersion : "1.0.0.0",
+		assemblyFileVersion : "1.0.0.0"
+	},
+	global:{
+		default:"zh_CN",
+		desc:"如果系统环境要求各芯片采用的语言本芯片没有，则芯片可采用默认语言"
+		},
+	serviceContainer : {
+		name : "netContainer",
+		switchFilter:"off",
+		monitor: "",
+		jss:[],
+		scans : [{
+					package : "cj.netos.jpush.terminal",
+					extName : ".class|.json|.xml",
+					exoterical:"true"
+				}]
+
+	}
+}

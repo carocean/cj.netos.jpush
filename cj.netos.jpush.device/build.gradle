@@ -23,7 +23,7 @@ jar {
     manifest {
         attributes 'Manifest-Version': version,
                 'Class-Path': '.',
-                'Main-Class':'cj.netos.jpush.device.DeviceEntrypoint',
+                'Main-Class':'cj.netos.jpush.device.console.DeviceEntrypoint',
                 'DynamicImport-Package':'*'
     }
 }
@@ -41,7 +41,7 @@ task runnableJar(dependsOn:':cj.netos.jpush.corelib:release',type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',
                 'Implementation-Version': version,
-                'Main-Class': 'cj.netos.jpush.device.DeviceEntrypoint'
+                'Main-Class': 'cj.netos.jpush.device.console.DeviceEntrypoint'
     }
     baseName = 'device'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
