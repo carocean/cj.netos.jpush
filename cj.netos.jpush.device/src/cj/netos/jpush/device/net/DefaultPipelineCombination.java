@@ -29,7 +29,7 @@ public class DefaultPipelineCombination implements IPipelineCombination {
                     if (StringUtil.isEmpty(status)) {
                         status = "200";
                     }
-                    if (Integer.valueOf(status) >= 400) {
+                    if (Double.valueOf(status).intValue() >= 400) {
                         if (onerror != null) {
                             onerror.onerror(new CircuitException(status, frame.head("message")));
                         }
