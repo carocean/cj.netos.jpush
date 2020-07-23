@@ -1,4 +1,4 @@
-package cj.netos.jpush.terminal;
+package cj.netos.jpush;
 
 public interface IPipelineCombination {
 	/**

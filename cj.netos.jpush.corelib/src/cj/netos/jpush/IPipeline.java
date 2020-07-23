@@ -1,14 +1,13 @@
-package cj.netos.jpush.terminal;
+package cj.netos.jpush;
 
-import cj.netos.jpush.JPushFrame;
 import cj.studio.ecm.net.CircuitException;
 import cj.ultimate.IDisposable;
 
 public interface IPipeline extends IDisposable {
 
-    EndPortInfo endPort();
+    EndPort endPort();
 
-    void endPort(EndPortInfo endPort);
+    void endPort(EndPort endPort);
 
     /**
      * 管道的附件，也可能空
@@ -30,13 +29,13 @@ public interface IPipeline extends IDisposable {
 
     void nextFlow(JPushFrame frame, IValve current) throws CircuitException;
 
-    void nextError(JPushFrame frame, Throwable error, IValve current) throws CircuitException;
+    void nextError(Throwable error, IValve current) throws CircuitException;
 
     void remove(IValve valve);
 
-    ITerminalServiceProvider site();
+    IJPushServiceProvider site();
 
-    void error(JPushFrame frame, Throwable e) throws CircuitException;
+    void error(Throwable e) throws CircuitException;
 
     boolean isEmpty();
 

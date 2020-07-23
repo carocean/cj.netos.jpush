@@ -1,0 +1,46 @@
+package cj.netos.jpush;
+
+import cj.studio.ecm.CJSystem;
+import cj.studio.ecm.net.util.TcpFrameBox;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.util.AttributeKey;
+
+public abstract class ChannelWriter {
+    public void writeChannel(Channel channel, JPushFrame frame) {
+        if (!frame.containsHead("status")) {
+            frame.head("status", "200");
+        }
+        if (!frame.containsHead("message")) {
+            frame.head("message", "OK");
+        }
+        AttributeKey<String> key = AttributeKey.valueOf("Net-Protocol");
+        String protocol = channel.attr(key).get();
+        switch (protocol) {
+            case "tcp":
+                PackFrame pack = new PackFrame((byte) 1, frame);
+                byte[] box = TcpFrameBox.box(pack.toBytes());
+                pack.dispose();
+                ByteBuf bb = Unpooled.buffer();
+                bb.writeBytes(box, 0, box.length);
+                if (!channel.isWritable()) {
+                    CJSystem.logging().warn(ChannelWriter.class, "套节字不能定");
+                    break;
+                }
+                try {
+                    channel.writeAndFlush(bb);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                    break;
+                }
+                break;
+            case "websocket":
+                BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame();
+                binaryWebSocketFrame.content().writeBytes(frame.toByteBuf());
+                channel.writeAndFlush(binaryWebSocketFrame);
+                break;
+        }
+    }
+}

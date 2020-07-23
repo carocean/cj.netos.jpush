@@ -1,6 +1,9 @@
 package cj.netos.jpush.device.console;
 
-import cj.netos.jpush.device.IDevice;
+import cj.netos.jpush.JPushFrame;
+import cj.netos.jpush.device.*;
+import cj.netos.jpush.device.IOnmessage;
+import cj.studio.ecm.net.CircuitException;
 import org.apache.commons.cli.*;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -36,10 +39,37 @@ public class DeviceEntrypoint {
 
         File consoleFile = getHomeDir(fileName, line);
         PropertyConfigurator.configure(String.format("%s%sconf%slog4j.properties", consoleFile.getParent(), File.separator, File.separator));
-        IDevice device = null;
+        IDevice device = Device.connect(url, new IOnopen() {
+            @Override
+            public void onopen() {
+                System.out.println("*********************************************");
+                System.out.println("*************已打开。欢迎使用******************");
+            }
+        }, new IOnclose() {
+            @Override
+            public void onclose() {
+                System.out.println("*************已关闭。色友那啦******************");
+                System.exit(0);
+            }
+
+        }, new IOnerror() {
+
+            @Override
+            public void onerror(Throwable error) {
+                System.out.println(String.format("--------------系统异常响应--------------------"));
+                System.out.println(error);
+                System.out.println("--------------end");
+            }
+
+        }, new IOnmessage() {
+            @Override
+            public void onmessage(JPushFrame frame) throws CircuitException {
+                System.out.println("----消息:" + frame);
+            }
+        });
         IMonitor console = new DeviceMonitor();
         try {
-            console.moniter(device, null);
+            console.moniter(device);
         } catch (Exception e) {
             e.printStackTrace();
             return;

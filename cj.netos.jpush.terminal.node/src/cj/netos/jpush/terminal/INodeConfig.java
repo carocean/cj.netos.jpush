@@ -8,4 +8,7 @@ public interface INodeConfig {
     ServerInfo getServerInfo();
 
     String home();
+
+    RestFullConfig getRestFull();
+
 }

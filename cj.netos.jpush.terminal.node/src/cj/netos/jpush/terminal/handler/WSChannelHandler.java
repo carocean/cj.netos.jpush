@@ -1,10 +1,10 @@
 package cj.netos.jpush.terminal.handler;
 
 import cj.netos.jpush.JPushFrame;
-import cj.netos.jpush.terminal.DefaultPipeline;
-import cj.netos.jpush.terminal.IPipeline;
-import cj.netos.jpush.terminal.IPipelineCombination;
-import cj.netos.jpush.terminal.ITerminalServiceProvider;
+import cj.netos.jpush.DefaultPipeline;
+import cj.netos.jpush.IPipeline;
+import cj.netos.jpush.IPipelineCombination;
+import cj.netos.jpush.IJPushServiceProvider;
 import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.EcmException;
 import cj.studio.ecm.logging.ILogging;
@@ -22,7 +22,7 @@ public class WSChannelHandler extends SimpleChannelInboundHandler<Object> {
     private IPipeline pipeline;
     private final IPipelineCombination combination;
 
-    public WSChannelHandler(ITerminalServiceProvider parent) {
+    public WSChannelHandler(IJPushServiceProvider parent) {
         logger = CJSystem.logging();
         combination = (IPipelineCombination) parent.getService("$.server.pipeline.combination");
         pipeline = new DefaultPipeline(parent);
@@ -77,7 +77,7 @@ public class WSChannelHandler extends SimpleChannelInboundHandler<Object> {
         try {
             pipeline.input(frame);
         } catch (Throwable e) {
-            pipeline.error(frame, e);
+            pipeline.error( e);
             logger.error(getClass(), e);
         }
     }

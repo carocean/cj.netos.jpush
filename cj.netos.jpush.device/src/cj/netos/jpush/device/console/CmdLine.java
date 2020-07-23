@@ -1,7 +1,6 @@
 package cj.netos.jpush.device.console;
 
 import cj.netos.jpush.device.IDevice;
-import cj.netos.jpush.device.ILogicNetwork;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.HashMap;
@@ -9,21 +8,15 @@ import java.util.Map;
 
 
 public final class CmdLine {
-	private final ILogicNetwork network;
 	IDevice device;
 	String cmd;
 	CommandLine line;
 	Map<String,Object> props;
-	public CmdLine(String cmd, CommandLine line, IDevice device, ILogicNetwork network) {
+	public CmdLine(String cmd, CommandLine line, IDevice device) {
 		this.cmd=cmd;
 		this.line=line;
 		props=new HashMap<>();
 		this.device = device;
-		this.network=network;
-	}
-
-	public ILogicNetwork network() {
-		return network;
 	}
 
 	public IDevice device() {

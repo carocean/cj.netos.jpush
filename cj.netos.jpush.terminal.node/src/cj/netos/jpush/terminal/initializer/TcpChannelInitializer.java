@@ -1,7 +1,7 @@
 
 package cj.netos.jpush.terminal.initializer;
 
-import cj.netos.jpush.terminal.ITerminalServiceProvider;
+import cj.netos.jpush.IJPushServiceProvider;
 import cj.netos.jpush.terminal.handler.TcpChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 
 public class TcpChannelInitializer extends ChannelInitializer<SocketChannel> {
-    ITerminalServiceProvider parent;
+    IJPushServiceProvider parent;
     long heartbeat;
 
-    public TcpChannelInitializer(ITerminalServiceProvider parent) {
+    public TcpChannelInitializer(IJPushServiceProvider parent) {
         this.parent=parent;
         this.heartbeat = (long) parent.getService("$.server.heartbeat");
     }

@@ -1,7 +1,6 @@
 package cj.netos.jpush.device.console;
 
 import cj.netos.jpush.device.IDevice;
-import cj.netos.jpush.device.ILogicNetwork;
 import cj.ultimate.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -20,7 +19,7 @@ public abstract class BaseMonitor implements IMonitor {
     protected abstract Scanner getScanner();
 
     @Override
-    public void moniter(IDevice device, ILogicNetwork network) throws ParseException, IOException {
+    public void moniter(IDevice device) throws ParseException, IOException {
         Scanner sc = getScanner();
         if (sc == null) {
             sc = new Scanner(System.in);
@@ -59,7 +58,7 @@ public abstract class BaseMonitor implements IMonitor {
             }
             try {
                 CommandLine the = new DefaultParser().parse(cmd.options(), args);
-                CmdLine cl = new CmdLine(cmdName, the, device, network);
+                CmdLine cl = new CmdLine(cmdName, the, device);
 
                 boolean isPrintPrefix = cmd.doCommand(cl);
                 if (checkExitOnAfterCommand(text)) {

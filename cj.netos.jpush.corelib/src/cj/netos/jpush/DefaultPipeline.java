@@ -1,19 +1,15 @@
-package cj.netos.jpush.terminal;
+package cj.netos.jpush;
 
-import cj.netos.jpush.JPushFrame;
 import cj.studio.ecm.net.CircuitException;
-import io.netty.channel.Channel;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 
 
 public class DefaultPipeline implements IPipeline {
     LinkEntry head;
-    private ITerminalServiceProvider site;
+    private IJPushServiceProvider site;
     Object attachment;
-    private EndPortInfo endPort;
+    private EndPort endPort;
 
-    public DefaultPipeline(ITerminalServiceProvider site) {
+    public DefaultPipeline(IJPushServiceProvider site) {
         this.site = site;
     }
 
@@ -23,7 +19,7 @@ public class DefaultPipeline implements IPipeline {
     }
 
     @Override
-    public ITerminalServiceProvider site() {
+    public IJPushServiceProvider site() {
         return site;
     }
 
@@ -83,25 +79,25 @@ public class DefaultPipeline implements IPipeline {
     }
 
     @Override
-    public void nextError(JPushFrame e, Throwable error, IValve current) throws CircuitException {
+    public void nextError(Throwable error, IValve current) throws CircuitException {
         if (head == null) {
             return;
         }
         if (current == null) {
-            head.entry.nextError(e, error, this);
+            head.entry.nextError(error, this);
             return;
         }
         LinkEntry linkEntry = lookforHead(current);
         if (linkEntry == null || linkEntry.next == null)
             return;
-        linkEntry.next.entry.nextError(e, error, this);
+        linkEntry.next.entry.nextError(error, this);
     }
 
     @Override
-    public void error(JPushFrame event, Throwable e) throws CircuitException {
+    public void error(Throwable e) throws CircuitException {
         if (head == null)
             return;
-        nextError(event, e, null);
+        nextError(e, null);
     }
 
     @Override
@@ -126,13 +122,13 @@ public class DefaultPipeline implements IPipeline {
     }
 
     @Override
-    public EndPortInfo endPort() {
-        return null;
+    public EndPort endPort() {
+        return endPort;
     }
 
     @Override
-    public void endPort(EndPortInfo endPort) {
-
+    public void endPort(EndPort endPort) {
+        this.endPort = endPort;
     }
 
     @Override

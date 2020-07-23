@@ -1,4 +1,4 @@
-package cj.netos.jpush.terminal;
+package cj.netos.jpush;
 
 public class CombineException extends Exception {
     public CombineException() {

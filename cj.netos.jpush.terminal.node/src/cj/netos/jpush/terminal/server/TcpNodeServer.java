@@ -1,5 +1,7 @@
 package cj.netos.jpush.terminal.server;
 
+import cj.netos.jpush.IJPushServiceProvider;
+import cj.netos.jpush.IPipelineCombination;
 import cj.netos.jpush.terminal.*;
 import cj.netos.jpush.terminal.initializer.TcpChannelInitializer;
 import cj.netos.jpush.terminal.pipeline.DefaultPipelineCombination;
@@ -9,6 +11,7 @@ import cj.studio.ecm.EcmException;
 import cj.ultimate.util.StringUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,8 +20,8 @@ import io.netty.util.internal.SystemPropertyUtil;
 
 import java.util.Map;
 
-public class TcpNodeServer implements ITerminalNodeServer, ITerminalServiceProvider {
-    ITerminalServiceProvider site;
+public class TcpNodeServer implements ITerminalNodeServer, IJPushServiceProvider {
+    IJPushServiceProvider site;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     boolean isStarted;
@@ -28,7 +31,7 @@ public class TcpNodeServer implements ITerminalNodeServer, ITerminalServiceProvi
     private long heartbeat;
     private IPipelineCombination combination;
 
-    public TcpNodeServer(ITerminalServiceProvider site) {
+    public TcpNodeServer(IJPushServiceProvider site) {
         this.site = site;
     }
 
@@ -57,7 +60,7 @@ public class TcpNodeServer implements ITerminalNodeServer, ITerminalServiceProvi
     }
 
     @Override
-    public void start() {
+    public ChannelFuture start() {
         combination = new DefaultPipelineCombination();
         INodeConfig config = (INodeConfig) site.getService("$.terminal.config");
         this.serverInfo = config.getServerInfo();
@@ -81,9 +84,9 @@ public class TcpNodeServer implements ITerminalNodeServer, ITerminalServiceProvi
             } else {
                 ch = b.bind(serverInfo.getHost(), serverInfo.getPort()).sync().channel();
             }
-            ch.closeFuture();// .sync();
             isStarted = true;
             CJSystem.logging().info(getClass(), String.format("服务已启动，地址:%s", serverInfo.toString()));
+            return ch.closeFuture();
         } catch (InterruptedException e) {
             throw new EcmException(e);
         }

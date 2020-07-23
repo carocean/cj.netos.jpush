@@ -1,7 +1,7 @@
 
 package cj.netos.jpush.terminal.initializer;
 
-import cj.netos.jpush.terminal.ITerminalServiceProvider;
+import cj.netos.jpush.IJPushServiceProvider;
 import cj.netos.jpush.terminal.handler.WSChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
@@ -23,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 
 public class WSChannelInitializer extends ChannelInitializer<SocketChannel> {
-    ITerminalServiceProvider parent;
+    IJPushServiceProvider parent;
     long heartbeat;
     int maxContentLength;
     String wspath;
     SslContext sslCtx;
 
-    public WSChannelInitializer(boolean SSL, ITerminalServiceProvider parent) throws CertificateException, SSLException {
+    public WSChannelInitializer(boolean SSL, IJPushServiceProvider parent) throws CertificateException, SSLException {
         this.parent = parent;
         this.heartbeat = (long) parent.getService("$.server.heartbeat");
         this.maxContentLength = (int) parent.getService("$.server.maxContentLength");
