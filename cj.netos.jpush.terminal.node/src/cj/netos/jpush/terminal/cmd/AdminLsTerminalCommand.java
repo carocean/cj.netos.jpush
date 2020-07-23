@@ -55,6 +55,7 @@ public class AdminLsTerminalCommand implements ITerminalCommand {
         JPushFrame response = new JPushFrame(String.format("adminLs / net/1.0"), bb);
         response.head("sender-person", endPort.getPerson());
         response.head("sender-device", endPort.getDevice());
+        response.head("online-count", endPortContainer.count() + "");
         endPort.writeFrame(response);
     }
 
