@@ -13,6 +13,7 @@ class NodeConfig implements INodeConfig {
     private String home;
     RestFullConfig dependOnPorts;
     RabbitMQConfig rabbitMQConfig;
+
     @Override
     public ServerInfo getServerInfo() {
         return serverInfo;
@@ -29,6 +30,11 @@ class NodeConfig implements INodeConfig {
     }
 
     @Override
+    public RabbitMQConfig getRabbitMQConfig() {
+        return rabbitMQConfig;
+    }
+
+    @Override
     public void load(String home) throws FileNotFoundException {
         this.home = home;
         Yaml nodeyaml = new Yaml();
@@ -41,7 +47,7 @@ class NodeConfig implements INodeConfig {
     }
 
     private void parseRabbitMQConfig(Map<String, Object> node) {
-        rabbitMQConfig=new RabbitMQConfig();
+        rabbitMQConfig = new RabbitMQConfig();
         Map<String, Object> obj = (Map<String, Object>) node.get("rabbitmq");
         rabbitMQConfig.parse(obj);
     }

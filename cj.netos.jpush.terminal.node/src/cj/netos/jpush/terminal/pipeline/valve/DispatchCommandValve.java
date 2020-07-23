@@ -3,7 +3,7 @@ package cj.netos.jpush.terminal.pipeline.valve;
 import cj.netos.jpush.*;
 import cj.netos.jpush.ChannelWriter;
 import cj.netos.jpush.terminal.ITerminalCommand;
-import cj.netos.jpush.terminal.cmd.LoginTerminalCommand;
+import cj.netos.jpush.terminal.cmd.*;
 import cj.studio.ecm.net.CircuitException;
 import cj.ultimate.gson2.com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
@@ -24,6 +24,16 @@ public class DispatchCommandValve extends ChannelWriter implements IValve {
         commandMap = new HashMap<>();
         ITerminalCommand login = new LoginTerminalCommand();
         commandMap.put(login.cmd(), login);
+        ITerminalCommand ls = new LsTerminalCommand();
+        commandMap.put(ls.cmd(), ls);
+        ITerminalCommand pause = new PauseTerminalCommand();
+        commandMap.put(pause.cmd(), pause);
+        ITerminalCommand resume = new ResumeTerminalCommand();
+        commandMap.put(resume.cmd(), resume);
+        ITerminalCommand adminls = new AdminLsTerminalCommand();
+        commandMap.put(adminls.cmd(), adminls);
+        ITerminalCommand adminview = new AdminViewTerminalCommand();
+        commandMap.put(adminview.cmd(), adminview);
     }
 
     @Override
@@ -47,11 +57,11 @@ public class DispatchCommandValve extends ChannelWriter implements IValve {
         map.put("cause", buffer.toString());
         bb.writeBytes(new Gson().toJson(map).getBytes());
 
-        JPushFrame back = new JPushFrame(String.format("error / network/1.0"), bb);
+        JPushFrame back = new JPushFrame(String.format("error / NET/1.0"), bb);
         EndPort endPort = pipeline.endPort();
         if (endPort != null) {
             back.head("sender-person", endPort.getPerson());
-            back.head("sender-peer", endPort.getDevice());
+            back.head("sender-device", endPort.getDevice());
         }
         CircuitException ce = CircuitException.search(error);
         if (ce != null) {

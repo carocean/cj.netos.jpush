@@ -13,7 +13,7 @@ public class CheckSecurityValve implements IValve {
 
     @Override
     public void flow(JPushFrame frame, IPipeline pipeline) throws CircuitException {
-        if (!"NETWORK/1.0".equals(frame.protocol())) {
+        if (!"NET/1.0".equals(frame.protocol())) {
             nextError(new CircuitException("500", "不是系统协议"), pipeline);
             return;
         }

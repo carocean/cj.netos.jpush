@@ -40,6 +40,11 @@ rabbitmq:
   connectionTimeout: 0
   # 连接池超时时间，单位毫秒，0表示不限定
   workPoolTimeout: 0
+  #当自动应答等于true的时候，表示当消费者一收到消息就表示消费者收到了消息，消费者收到了消息就会立即从队列中删除。
+  #消息的自动ACK确认机制默认是true
+  #在非自动确认模式下如果忘记了ACK，那么后果很严重。当Consumer退出时候，Message会一直重新分发
+  #可以修改rabbitmq的配置以设定重试次数
+  autoAck: false
   #RabbitMQ提供了一种qos（服务质量保证，即流量控制）功能，即在非自动确认消息的前提下，如果一定数目的消息（通过基于consume或者channel设置Qos的值）未被确认前，不进行消费新的消息。
   basicQos:
     #限制消息本身的大小

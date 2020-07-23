@@ -32,11 +32,7 @@ public class Device implements IDevice {
         }
     }
 
-    public static IDevice connect(String url) {
-        return connect(url, null, null, null, null);
-    }
-
-    public static IDevice connect(String url, IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnmessage onmessage) {
+    public static IDevice connect(String url, IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnevent onevent, IOnmessage onmessage) {
         int pos = url.indexOf("://");
         if (pos < 0) {
             throw new EcmException("地址格式错误:" + url);
@@ -75,7 +71,7 @@ public class Device implements IDevice {
         IConnection connection = null;
         switch (protocol) {
             case "tcp":
-                connection = new TcpConnection(onopen, onclose,onerror, onmessage);
+                connection = new TcpConnection(onopen, onclose, onerror, onevent, onmessage);
                 connection.connect(protocol, ip, port, props);
                 break;
             case "ws":
@@ -83,7 +79,7 @@ public class Device implements IDevice {
                 if (!StringUtil.isEmpty(relurl) && !props.containsKey("wspath")) {
                     props.put("wspath", relurl);
                 }
-                connection = new WSConnection(onopen, onclose,onerror, onmessage);
+                connection = new WSConnection(onopen, onclose, onerror, onevent, onmessage);
                 connection.connect(protocol, ip, port, props);
                 break;
             default:
@@ -95,9 +91,40 @@ public class Device implements IDevice {
     }
 
     @Override
-    public void login( String token) {
-        JPushFrame frame = new JPushFrame("login / network/1.0");
+    public void login(String token) {
+        JPushFrame frame = new JPushFrame("login / NET/1.0");
         frame.head("accessToken", token);
+        connection.send(frame);
+    }
+
+    @Override
+    public void lsInfo() {
+        JPushFrame frame = new JPushFrame("ls / NET/1.0");
+        connection.send(frame);
+    }
+
+    @Override
+    public void resume() {
+        JPushFrame frame = new JPushFrame("resume / NET/1.0");
+        connection.send(frame);
+    }
+
+    @Override
+    public void pause() {
+        JPushFrame frame = new JPushFrame("pause / NET/1.0");
+        connection.send(frame);
+    }
+
+    @Override
+    public void adminLs() {
+        JPushFrame frame = new JPushFrame("adminLs / NET/1.0");
+        connection.send(frame);
+    }
+
+    @Override
+    public void adminView(String u) {
+        JPushFrame frame = new JPushFrame("adminView / NET/1.0");
+        frame.head("person", u);
         connection.send(frame);
     }
 

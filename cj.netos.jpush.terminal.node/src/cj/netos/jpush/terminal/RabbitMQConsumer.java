@@ -2,9 +2,13 @@ package cj.netos.jpush.terminal;
 
 import cj.netos.jpush.EndPort;
 import cj.netos.jpush.IJPushServiceProvider;
+import cj.netos.jpush.JPushFrame;
 import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.net.CircuitException;
+import cj.ultimate.util.StringUtil;
 import com.rabbitmq.client.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 import java.util.List;
@@ -167,12 +171,13 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
     }
 
     @Override
-    public void cancelConsumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException {
+    public void stopConsumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException {
         try {
             channel.basicCancel(personEndPorts.getConsumerTag());
-            personEndPorts.setConsumed(false);
         } catch (IOException e) {
             throw new CircuitException("500", e);
+        } finally {
+            personEndPorts.setConsumed(false);
         }
     }
 
@@ -192,13 +197,39 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
             try {
-                System.out.println("------" + consumerTag+"  "+properties.getType());
-
+                String url = properties.getType();
+                if (StringUtil.isEmpty(url)) {
+                    //丢弃
+                    getChannel().basicReject(envelope.getDeliveryTag(), false);
+                    CJSystem.logging().warn(getClass(), String.format("路由:%s 缺少type，已丢弃", envelope.getRoutingKey()));
+                    return;
+                }
+                LongString cmd = (LongString) properties.getHeaders().get("command");
+                if (cmd == null) {
+                    //丢弃
+                    getChannel().basicReject(envelope.getDeliveryTag(), false);
+                    CJSystem.logging().warn(getClass(), String.format("路由:%s 消息头中缺少command，已丢弃", envelope.getRoutingKey()));
+                    return;
+                }
+                Map<String, Object> headers = properties.getHeaders();
+                ByteBuf bb = Unpooled.buffer();
+                if (body != null && body.length > 0) {
+                    bb.writeBytes(body);
+                }
+                JPushFrame frame = new JPushFrame(String.format("%s %s jpush/1.0", cmd, url), bb);
+                for (Map.Entry<String, Object> entry : headers.entrySet()) {
+                    frame.head(entry.getKey(), entry.getValue() + "");
+                }
+                for (EndPort endPort : personEndPorts.endPorts()) {
+                    endPort.writeFrame(frame.copy());
+                }
+                frame.dispose();
+                channel.basicAck(envelope.getDeliveryTag(), false);
                 //如果发生错误则会导致channel并闭，因此捕获
             } catch (Throwable throwable) {
                 CJSystem.logging().error(getClass(), throwable);
-                //默认异常则会消费掉消息（即丢掉）
-                getChannel().basicReject(envelope.getDeliveryTag(), false);
+                //出错之后重试
+                getChannel().basicReject(envelope.getDeliveryTag(), true);
             }
         }
     }

@@ -8,7 +8,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.util.AttributeKey;
 
-public abstract class ChannelWriter {
+public class ChannelWriter {
     public void writeChannel(Channel channel, JPushFrame frame) {
         if (!frame.containsHead("status")) {
             frame.head("status", "200");

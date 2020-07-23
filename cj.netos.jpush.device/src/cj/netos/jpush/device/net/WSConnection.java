@@ -52,8 +52,8 @@ public class WSConnection implements IConnection, IJPushServiceProvider {
     DefaultPipelineCombination pipelineCombination;
 
 
-    public WSConnection(IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnmessage onmessage) {
-        pipelineCombination = new DefaultPipelineCombination(onmessage, onerror);
+    public WSConnection(IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnevent onevent, IOnmessage onmessage) {
+        pipelineCombination = new DefaultPipelineCombination(onmessage, onerror, onevent);
         this.onopen = onopen;
         this.onclose = onclose;
     }

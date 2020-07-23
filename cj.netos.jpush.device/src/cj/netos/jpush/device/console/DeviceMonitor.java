@@ -1,7 +1,7 @@
 package cj.netos.jpush.device.console;
 
 
-import cj.netos.jpush.device.console.cmd.LoginCommand;
+import cj.netos.jpush.device.console.cmd.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,14 @@ public class DeviceMonitor extends BaseMonitor {
         Map<String, Command> cmds = new HashMap<>();
         Command login = new LoginCommand();
         cmds.put(login.cmd(), login);
+        Command ls = new LsCommand();
+        cmds.put(ls.cmd(), ls);
+        Command pause = new PauseCommand();
+        cmds.put(pause.cmd(), pause);
+        Command resume = new ResumeCommand();
+        cmds.put(resume.cmd(), resume);
+        Command admin = new AdminCommand();
+        cmds.put(admin.cmd(), admin);
         return cmds;
     }
 }

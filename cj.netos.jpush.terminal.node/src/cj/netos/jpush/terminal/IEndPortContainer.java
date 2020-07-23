@@ -5,8 +5,13 @@ import cj.studio.ecm.net.CircuitException;
 import io.netty.channel.Channel;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface IEndPortContainer {
+    Set<String> listPerson();
+
+    int count();
+
     /**
      * {expireTime=7200000.0, person=cj@la.netos, nickName=大地经济, pubTime=1.595424721408E12, roles=[app:users@la.netos], portal=nodepower, isExpired=false, device=b1c5321a7b40f1b7582e1d36fc04db48}
      * @param info
@@ -16,5 +21,7 @@ public interface IEndPortContainer {
 
 
     void offline(EndPort endPort) throws CircuitException;
+
+    PersonEndPorts getPersonEndPorts(String person);
 
 }

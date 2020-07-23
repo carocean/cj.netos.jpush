@@ -6,8 +6,10 @@ import cj.studio.ecm.net.CircuitException;
 import io.netty.channel.Channel;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 //自动生成队列，接收消息，在同一用户内向其不同的设备广播消息
@@ -18,6 +20,21 @@ public class EndPortContainer implements IEndPortContainer {
     public EndPortContainer(IJPushServiceProvider site) {
         endPorts = new ConcurrentHashMap<>();
         rabbitMQConsumer = (IRabbitMQConsumer) site.getService("$.terminal.rabbitMQConsumer");
+    }
+
+    @Override
+    public PersonEndPorts getPersonEndPorts(String person) {
+        return endPorts.get(person);
+    }
+
+    @Override
+    public Set<String> listPerson() {
+        return endPorts.keySet();
+    }
+
+    @Override
+    public int count() {
+        return endPorts.size();
     }
 
     //{expireTime=7200000.0, person=cj@la.netos, nickName=大地经济, pubTime=1.595424721408E12, roles=[app:users@la.netos], portal=nodepower, isExpired=false, device=b1c5321a7b40f1b7582e1d36fc04db48}
@@ -64,7 +81,7 @@ public class EndPortContainer implements IEndPortContainer {
         }
         personEndPorts.removeEndPort(person, device);
         if (personEndPorts.isEmpty()) {
-            rabbitMQConsumer.cancelConsumePersonQueue(personEndPorts);
+            rabbitMQConsumer.stopConsumePersonQueue(personEndPorts);
         }
     }
 }

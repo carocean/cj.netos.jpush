@@ -61,10 +61,19 @@ public class DeviceEntrypoint {
                 System.out.println("--------------end");
             }
 
+        }, new IOnevent() {
+            @Override
+            public void onevent(JPushFrame frame) throws CircuitException {
+                System.out.println(String.format("--------------系统消息--------------------"));
+                System.out.println(new String(frame.toBytes()));
+                System.out.println("--------------end");
+            }
         }, new IOnmessage() {
             @Override
             public void onmessage(JPushFrame frame) throws CircuitException {
-                System.out.println("----消息:" + frame);
+                System.out.println(String.format("--------------用户消息--------------------"));
+                System.out.println(new String(frame.toBytes()));
+                System.out.println("--------------end");
             }
         });
         IMonitor console = new DeviceMonitor();

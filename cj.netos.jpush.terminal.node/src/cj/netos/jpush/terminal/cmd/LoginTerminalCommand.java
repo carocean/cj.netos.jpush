@@ -46,6 +46,11 @@ public class LoginTerminalCommand implements ITerminalCommand {
         IEndPortContainer endPortContainer = (IEndPortContainer) pipeline.site().getService("$.terminal.endPortContainer");
         EndPort endPort = endPortContainer.online((Channel) pipeline.attachment(), info);
         pipeline.endPort(endPort);
+        JPushFrame response = new JPushFrame(String.format("online / net/1.0"));
+        response.head("sender-person", endPort.getPerson());
+        response.head("sender-device", endPort.getDevice());
+        response.head("nick-name", endPort.getNickName());
+        endPort.writeFrame(response);
     }
 
     private Map<String, Object> verifyAccessToken(OkHttpClient client, RestFullConfig config, String accessToken) throws IOException, CircuitException {

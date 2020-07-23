@@ -4,14 +4,16 @@ import io.netty.channel.Channel;
 
 import java.util.List;
 
-public class EndPort extends ChannelWriter {
+public class EndPort {
     String person;
     String device;
     String nickName;
+    ChannelWriter writer;
     Channel channel;
     List<String> roles;
 
     public EndPort(Channel channel) {
+        this.writer = new ChannelWriter();
         this.channel = channel;
     }
 
@@ -48,6 +50,6 @@ public class EndPort extends ChannelWriter {
     }
 
     public void writeFrame(JPushFrame frame) {
-        writeChannel(channel, frame);
+        writer.writeChannel(channel, frame);
     }
 }

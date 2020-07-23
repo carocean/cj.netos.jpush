@@ -35,8 +35,8 @@ public class TcpConnection implements IConnection, IJPushServiceProvider {
 
     DefaultPipelineCombination pipelineCombination;
 
-    public TcpConnection(IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnmessage onmessage) {
-        pipelineCombination = new DefaultPipelineCombination(onmessage, onerror);
+    public TcpConnection(IOnopen onopen, IOnclose onclose, IOnerror onerror, IOnevent onevent, IOnmessage onmessage) {
+        pipelineCombination = new DefaultPipelineCombination(onmessage, onerror, onevent);
         this.onopen = onopen;
         this.onclose = onclose;
     }

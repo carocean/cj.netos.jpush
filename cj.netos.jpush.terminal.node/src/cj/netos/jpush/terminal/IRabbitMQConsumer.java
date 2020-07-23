@@ -28,7 +28,7 @@ public interface IRabbitMQConsumer {
 
     void consumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException;
 
-    void cancelConsumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException;
+    void stopConsumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException;
 
 
 }

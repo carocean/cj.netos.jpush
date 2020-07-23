@@ -74,7 +74,7 @@ public class TcpChannelHandler extends ChannelHandlerAdapter {
     }
 
     private void feedbackHeartbeat(ChannelHandlerContext ctx) {
-        JPushFrame f = new JPushFrame("heartbeat / network/1.0");
+        JPushFrame f = new JPushFrame("heartbeat / NET/1.0");
         PackFrame pack = new PackFrame((byte) 2, f);
         byte[] box = TcpFrameBox.box(pack.toBytes());
         pack.dispose();
