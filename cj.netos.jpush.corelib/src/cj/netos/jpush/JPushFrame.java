@@ -37,7 +37,7 @@ public class JPushFrame implements IPrinter, IDisposable {
         headmap.clear();
         parametermap.clear();
         ByteBuf bb = ((DefaultFrameContent) content).buf;
-        if (bb != null&&bb.refCnt()>0)
+        if (bb != null && bb.refCnt() > 0)
             bb.release();
     }
 
@@ -339,6 +339,10 @@ public class JPushFrame implements IPrinter, IDisposable {
             keys.add(key);
         }
         return keys.toArray(new String[0]);
+    }
+
+    public String[] enumInnerParameterName() {
+        return parametermap.keySet().toArray(new String[0]);
     }
 
     public String parameter(String name) {

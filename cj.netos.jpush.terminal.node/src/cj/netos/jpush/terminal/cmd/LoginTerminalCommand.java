@@ -47,8 +47,8 @@ public class LoginTerminalCommand implements ITerminalCommand {
         EndPort endPort = endPortContainer.online((Channel) pipeline.attachment(), info);
         pipeline.endPort(endPort);
         JPushFrame response = new JPushFrame(String.format("online / net/1.0"));
-        response.head("sender-person", endPort.getPerson());
-        response.head("sender-device", endPort.getDevice());
+        response.head("to-person", endPort.getPerson());
+        response.head("to-device", endPort.getDevice());
         response.head("nick-name", endPort.getNickName());
         endPort.writeFrame(response);
     }

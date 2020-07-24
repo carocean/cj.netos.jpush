@@ -60,8 +60,8 @@ public class DispatchCommandValve extends ChannelWriter implements IValve {
         JPushFrame back = new JPushFrame(String.format("error / NET/1.0"), bb);
         EndPort endPort = pipeline.endPort();
         if (endPort != null) {
-            back.head("sender-person", endPort.getPerson());
-            back.head("sender-device", endPort.getDevice());
+            back.head("to-person", endPort.getPerson());
+            back.head("to-device", endPort.getDevice());
         }
         CircuitException ce = CircuitException.search(error);
         if (ce != null) {

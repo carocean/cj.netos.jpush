@@ -40,7 +40,7 @@ task releaseToNode(type: Copy){
 task releaseToTest(type: Copy){
     dependsOn "build"
     from 'build/libs/'
-    into '../cj.netos.jpush.test/src/cj/references'
+    into '../cj.netos.jpush.website/src/cj/references'
     include '**/*.jar'
     exclude '**/*-javadoc.jar','**/*-sources.jar'
 }

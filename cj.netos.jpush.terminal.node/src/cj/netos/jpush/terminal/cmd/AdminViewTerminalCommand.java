@@ -29,8 +29,8 @@ public class AdminViewTerminalCommand implements ITerminalCommand {
         EndPort endPort = pipeline.endPort();
         if (!endPort.roleIn("platform:administrators")) {
             JPushFrame response = new JPushFrame(String.format("adminView / net/1.0"));
-            response.head("sender-person", endPort.getPerson());
-            response.head("sender-device", endPort.getDevice());
+            response.head("to-person", endPort.getPerson());
+            response.head("to-device", endPort.getDevice());
             response.head("nick-name", endPort.getNickName());
             response.head("status", "801");
             response.head("message", "拒绝访问");
@@ -54,8 +54,8 @@ public class AdminViewTerminalCommand implements ITerminalCommand {
             bb.writeBytes(new Gson().toJson(map).getBytes());
         }
         JPushFrame response = new JPushFrame(String.format("adminView / net/1.0"), bb);
-        response.head("sender-person", endPort.getPerson());
-        response.head("sender-device", endPort.getDevice());
+        response.head("to-person", endPort.getPerson());
+        response.head("to-device", endPort.getDevice());
         response.head("nick-name", endPort.getNickName());
         PersonEndPorts owner = endPortContainer.getPersonEndPorts(endPort.getPerson());
         boolean isConsumed = owner == null ? false : owner.isConsumed();

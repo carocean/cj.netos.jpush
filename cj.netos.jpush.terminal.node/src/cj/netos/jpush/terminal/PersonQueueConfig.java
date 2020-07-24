@@ -20,7 +20,7 @@ public class PersonQueueConfig {
         arguments = node.get("arguments") == null ? new HashMap<>() : (Map<String, Object>) node.get("arguments");
     }
 
-    public void printLog(Class<? extends RabbitMQConfig> aClass, String indent) {
+    public void printLog(Class<?> aClass, String indent) {
         CJSystem.logging().info(aClass, String.format("%sname=%s", indent, prefixName));
         CJSystem.logging().info(aClass, String.format("%sdurable=%s", indent, durable));
         CJSystem.logging().info(aClass, String.format("%sautoDelete=%s", indent, autoDelete));

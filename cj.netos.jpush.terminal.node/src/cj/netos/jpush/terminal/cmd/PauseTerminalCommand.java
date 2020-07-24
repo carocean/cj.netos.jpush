@@ -34,8 +34,8 @@ public class PauseTerminalCommand implements ITerminalCommand {
             isConsumed=personEndPorts.isConsumed();
         }
         JPushFrame response = new JPushFrame(String.format("pause / net/1.0"));
-        response.head("sender-person", endPort.getPerson());
-        response.head("sender-device", endPort.getDevice());
+        response.head("to-person", endPort.getPerson());
+        response.head("to-device", endPort.getDevice());
         response.head("nick-name", endPort.getNickName());
         response.head("is-consumed", isConsumed + "");
         endPort.writeFrame(response);

@@ -38,8 +38,8 @@ public class LsTerminalCommand implements ITerminalCommand {
             bb.writeBytes(new Gson().toJson(devices).getBytes());
         }
         JPushFrame response = new JPushFrame(String.format("ls / net/1.0"), bb);
-        response.head("sender-person", endPort.getPerson());
-        response.head("sender-device", endPort.getDevice());
+        response.head("to-person", endPort.getPerson());
+        response.head("to-device", endPort.getDevice());
         response.head("nick-name", endPort.getNickName());
         response.head("is-consumed", isConsumed + "");
         endPort.writeFrame(response);

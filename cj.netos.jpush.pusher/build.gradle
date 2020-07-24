@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
     compile group: 'cj.studio.gateway2', name: 'cj.studio.ecm.net', version: ref_cj_studio_ecm_net_version
     compile project (':cj.netos.jpush.corelib')
 }
@@ -34,7 +36,7 @@ task releaseToOutputs(type: Copy){
 task releaseToTest(type: Copy){
     dependsOn "build"
     from 'build/libs/'
-    into '../cj.netos.jpush.test/src/cj/references'
+    into '../cj.netos.jpush.website/src/cj/references'
     include '**/*.jar'
     exclude '**/*-javadoc.jar','**/*-sources.jar'
 }

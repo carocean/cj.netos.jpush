@@ -52,7 +52,7 @@ rabbitmq:
     prefetchSize: 0
     #会告诉RabbitMQ不要同时给一个消费者推送多于N个消息，即一旦有N个消息还没有ack，则该consumer将等待，直到有消息ack
     #0为无限制
-    prefetchCount: 10
+    prefetchCount: 100
     #true是将上面设置应用于channel，简单点说，就是上面限制是channel级别的还是consumer级别
     #默认为false
     global: false

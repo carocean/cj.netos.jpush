@@ -126,13 +126,13 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         List<String> exchanges = config.getExchanges();
         for (String exchange : exchanges) {
             channel.exchangeDeclarePassive(exchange);
-            String personRoutingKey = String.format("/person/%s", personEndPorts.getPerson());
+            String personRoutingKey = String.format("person.%s", personEndPorts.getPerson());
             channel.queueBind(queueName, exchange, personRoutingKey);
             for (EndPort port : personEndPorts.endPorts()) {
                 if (port == null) {
                     continue;
                 }
-                String deviceRoutingKey = String.format("/device/%s", port.getDevice());
+                String deviceRoutingKey = String.format("device.%s", port.getDevice());
                 channel.queueBind(queueName, exchange, deviceRoutingKey);
             }
         }
@@ -145,13 +145,13 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         List<String> exchanges = config.getExchanges();
         for (String exchange : exchanges) {
             channel.exchangeDeclarePassive(exchange);
-            String personRoutingKey = String.format("/person/%s", personEndPorts.getPerson());
+            String personRoutingKey = String.format("person.%s", personEndPorts.getPerson());
             channel.queueUnbind(queueName, exchange, personRoutingKey);
             for (EndPort port : personEndPorts.endPorts()) {
                 if (port == null) {
                     continue;
                 }
-                String deviceRoutingKey = String.format("/device/%s", port.getDevice());
+                String deviceRoutingKey = String.format("device.%s", port.getDevice());
                 channel.queueUnbind(queueName, exchange, deviceRoutingKey);
             }
         }
@@ -164,7 +164,7 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         List<String> exchanges = config.getExchanges();
         for (String exchange : exchanges) {
             channel.exchangeDeclarePassive(exchange);
-            String deviceRoutingKey = String.format("/device/%s", port.getDevice());
+            String deviceRoutingKey = String.format("device.%s", port.getDevice());
             channel.queueUnbind(queueName, exchange, deviceRoutingKey);
         }
     }
