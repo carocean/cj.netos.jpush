@@ -24,7 +24,9 @@ public interface IRabbitMQConsumer {
 
     void bindEndPort(PersonEndPorts personEndPorts) throws IOException;
 
-    void unbindEndPort(PersonEndPorts personEndPorts) throws IOException;
+    void unbindPerson(PersonEndPorts personEndPorts) throws IOException;
+
+    void unbindEndPort(EndPort port) throws IOException;
 
     void consumePersonQueue(PersonEndPorts personEndPorts) throws CircuitException;
 

@@ -139,21 +139,33 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
     }
 
     @Override
-    public void unbindEndPort(PersonEndPorts personEndPorts) throws IOException {
+    public void unbindPerson(PersonEndPorts personEndPorts) throws IOException {
         PersonQueueConfig queueConfig = config.getPersonQueueConfig();
         String queueName = String.format("%s%s", queueConfig.prefixName, personEndPorts.getPerson());
         List<String> exchanges = config.getExchanges();
         for (String exchange : exchanges) {
             channel.exchangeDeclarePassive(exchange);
             String personRoutingKey = String.format("/person/%s", personEndPorts.getPerson());
-            channel.queueBind(queueName, exchange, personRoutingKey);
+            channel.queueUnbind(queueName, exchange, personRoutingKey);
             for (EndPort port : personEndPorts.endPorts()) {
                 if (port == null) {
                     continue;
                 }
                 String deviceRoutingKey = String.format("/device/%s", port.getDevice());
-                channel.queueBind(queueName, exchange, deviceRoutingKey);
+                channel.queueUnbind(queueName, exchange, deviceRoutingKey);
             }
+        }
+    }
+
+    @Override
+    public void unbindEndPort(EndPort port) throws IOException {
+        PersonQueueConfig queueConfig = config.getPersonQueueConfig();
+        String queueName = String.format("%s%s", queueConfig.prefixName, port.getPerson());
+        List<String> exchanges = config.getExchanges();
+        for (String exchange : exchanges) {
+            channel.exchangeDeclarePassive(exchange);
+            String deviceRoutingKey = String.format("/device/%s", port.getDevice());
+            channel.queueUnbind(queueName, exchange, deviceRoutingKey);
         }
     }
 
@@ -211,12 +223,25 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
                     CJSystem.logging().warn(getClass(), String.format("路由:%s 消息头中缺少command，已丢弃", envelope.getRoutingKey()));
                     return;
                 }
+                LongString protocol = (LongString) properties.getHeaders().get("protocol");
+                if (protocol == null) {
+                    //丢弃
+                    getChannel().basicReject(envelope.getDeliveryTag(), false);
+                    CJSystem.logging().warn(getClass(), String.format("路由:%s 消息头中缺少protocol，已丢弃", envelope.getRoutingKey()));
+                    return;
+                }
+                if ("NET/1.0".equalsIgnoreCase(protocol.toString())) {
+                    //丢弃
+                    getChannel().basicReject(envelope.getDeliveryTag(), false);
+                    CJSystem.logging().warn(getClass(), String.format("路由:%s 消息的protocol不能是系统协议：NET/1.0", envelope.getRoutingKey()));
+                    return;
+                }
                 Map<String, Object> headers = properties.getHeaders();
                 ByteBuf bb = Unpooled.buffer();
                 if (body != null && body.length > 0) {
                     bb.writeBytes(body);
                 }
-                JPushFrame frame = new JPushFrame(String.format("%s %s jpush/1.0", cmd, url), bb);
+                JPushFrame frame = new JPushFrame(String.format("%s %s %s", cmd, url, protocol), bb);
                 for (Map.Entry<String, Object> entry : headers.entrySet()) {
                     frame.head(entry.getKey(), entry.getValue() + "");
                 }

@@ -50,21 +50,17 @@ public class EndPortContainer implements IEndPortContainer {
             personEndPorts = new PersonEndPorts();
             personEndPorts.setPerson(endPort.getPerson());
             personEndPorts.setNickName(endPort.getNickName());
-            personEndPorts.addEndPort(endPort);
             endPorts.put(endPort.getPerson(), personEndPorts);
-            try {
-                rabbitMQConsumer.bindEndPort(personEndPorts);
-                rabbitMQConsumer.consumePersonQueue(personEndPorts);
-            } catch (IOException e) {
-                throw new CircuitException("500", e);
-            }
-        } else {
-            personEndPorts.addEndPort(endPort);
+        }
+        personEndPorts.addEndPort(endPort);
+        try {
+            rabbitMQConsumer.bindEndPort(personEndPorts);
             if (!personEndPorts.isConsumed()) {
                 rabbitMQConsumer.consumePersonQueue(personEndPorts);
             }
+        } catch (IOException e) {
+            throw new CircuitException("500", e);
         }
-
         return endPort;
     }
 
@@ -79,7 +75,12 @@ public class EndPortContainer implements IEndPortContainer {
         if (personEndPorts == null) {
             return;
         }
-        personEndPorts.removeEndPort(person, device);
+        try {
+            rabbitMQConsumer.unbindEndPort(theEndPort);
+            personEndPorts.removeEndPort(person, device);
+        } catch (IOException e) {
+            throw new CircuitException("500", e);
+        }
         if (personEndPorts.isEmpty()) {
             rabbitMQConsumer.stopConsumePersonQueue(personEndPorts);
         }
