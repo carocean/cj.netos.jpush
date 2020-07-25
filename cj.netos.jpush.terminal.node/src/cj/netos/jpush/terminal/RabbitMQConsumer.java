@@ -187,7 +187,8 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         try {
             channel.basicCancel(personEndPorts.getConsumerTag());
         } catch (IOException e) {
-            throw new CircuitException("500", e);
+            CJSystem.logging().error(getClass(), e.getMessage());
+            return;
         } finally {
             personEndPorts.setConsumed(false);
         }
