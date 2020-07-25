@@ -57,6 +57,12 @@ public class TerminalNodeContainer implements ITerminalNodeContainer, TreeCacheL
         switch (event.getType()) {
             case NODE_ADDED:
                 address = new String(data.getData());
+                for (int i = 0; i < terminalAddressList.size(); i++) {
+                    String item = terminalAddressList.get(i);
+                    if (item.equals(address)) {
+                        terminalAddressList.remove(i);
+                    }
+                }
                 terminalAddressList.add(address);
                 CJSystem.logging().info(getClass(), String.format("发现新终端：%s = %s", data.getPath(), address));
                 break;
