@@ -4,7 +4,7 @@ import cj.netos.jpush.IJPushServiceProvider;
 import cj.netos.jpush.IPipelineCombination;
 import cj.netos.jpush.terminal.INodeConfig;
 import cj.netos.jpush.terminal.ITerminalNodeServer;
-import cj.netos.jpush.terminal.ServerInfo;
+import cj.netos.jpush.terminal.ServerConfig;
 import cj.netos.jpush.terminal.initializer.WSChannelInitializer;
 import cj.netos.jpush.terminal.pipeline.DefaultPipelineCombination;
 import cj.netos.jpush.util.PropUtil;
@@ -28,7 +28,7 @@ public class WSNodeServer implements ITerminalNodeServer, IJPushServiceProvider 
     boolean isStarted;
     private int bossThreadCount;
     private int workThreadCount;
-    private ServerInfo serverInfo;
+    private ServerConfig serverConfig;
     private long heartbeat;
     private int maxContentLength;
     private String wspath;
@@ -42,7 +42,7 @@ public class WSNodeServer implements ITerminalNodeServer, IJPushServiceProvider 
     @Override
     public Object getService(String serviceId) {
         if ("$.server.info".equals(serviceId)) {
-            return serverInfo;
+            return serverConfig;
         }
         if ("$.server.pipeline.combination".equals(serviceId)) {
             return combination;
@@ -71,28 +71,28 @@ public class WSNodeServer implements ITerminalNodeServer, IJPushServiceProvider 
     public ChannelFuture start() {
         combination = new DefaultPipelineCombination();
         INodeConfig config = (INodeConfig) site.getService("$.terminal.config");
-        this.serverInfo = config.getServerInfo();
+        this.serverConfig = config.getServerConfig();
         if (isStarted) {
-            throw new EcmException(String.format("服务器:%s已启动", serverInfo));
+            throw new EcmException(String.format("服务器:%s已启动", serverConfig));
         }
-        parseProps(serverInfo.getProps());
+        parseProps(serverConfig.getProps());
 
         bossGroup = new NioEventLoopGroup(bossThreadCount);
         workerGroup = new NioEventLoopGroup(workThreadCount);
         ServerBootstrap b = new ServerBootstrap();
         try {
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                    .childHandler(new WSChannelInitializer("wss".equals(serverInfo.getProtocol()), this));
+                    .childHandler(new WSChannelInitializer("wss".equals(serverConfig.getProtocol()), this));
 
             // Bind and start to accept incoming connections.
             Channel ch = null;
-            if ("localhost".equals(serverInfo.getHost())) {
-                ch = b.bind(serverInfo.getPort()).sync().channel();
+            if ("localhost".equals(serverConfig.getHost())) {
+                ch = b.bind(serverConfig.getPort()).sync().channel();
             } else {
-                ch = b.bind(serverInfo.getHost(), serverInfo.getPort()).sync().channel();
+                ch = b.bind(serverConfig.getHost(), serverConfig.getPort()).sync().channel();
             }
             isStarted = true;
-            CJSystem.logging().info(getClass(), String.format("服务已启动，地址:%s%s", serverInfo.toString(), wspath));
+            CJSystem.logging().info(getClass(), String.format("服务已启动，地址:%s%s", serverConfig.toString(), wspath));
             return ch.closeFuture();
         } catch (Exception e) {
             throw new EcmException(e);

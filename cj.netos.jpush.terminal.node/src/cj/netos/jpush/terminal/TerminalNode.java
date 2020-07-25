@@ -21,21 +21,25 @@ public class TerminalNode implements ITerminalNode {
     OkHttpClient restfull;
     IEndPortContainer endPortContainer;
     IRabbitMQConsumer rabbitMQConsumer;
+    IAscRegistry ascRegistry;//注册中心注册器
 
     @Override
-    public void entrypoint(String home) throws FileNotFoundException {
+    public void entrypoint(String home) throws Exception {
         site = new TerminalServiceProvider();
         nodeConfig = new NodeConfig();
         nodeConfig.load(home);
         buildOkHttpClient();
 
-        nodeServer = createNodeServer(nodeConfig.getServerInfo());
+        nodeServer = createNodeServer(nodeConfig.getServerConfig());
 
         rabbitMQConsumer = new RabbitMQConsumer();
 
         endPortContainer = createEndPortContainer();
 
-        ChannelFuture future=nodeServer.start();
+        ChannelFuture future = nodeServer.start();
+
+        ascRegistry = new AscRegistry();
+        ascRegistry.start(nodeConfig);
 
         try {
             rabbitMQConsumer.open(site);
@@ -54,7 +58,7 @@ public class TerminalNode implements ITerminalNode {
     }
 
     private void buildOkHttpClient() {
-        RestFullConfig config = nodeConfig.getRestFull();
+        RestFullConfig config = nodeConfig.getRestFullConfig();
         restfull = new OkHttpClient().newBuilder()
                 .readTimeout(config.readTimeout(), TimeUnit.MILLISECONDS)
                 .writeTimeout(config.writeTimeout(), TimeUnit.MILLISECONDS)
@@ -62,8 +66,8 @@ public class TerminalNode implements ITerminalNode {
                 .build();
     }
 
-    private ITerminalNodeServer createNodeServer(ServerInfo serverInfo) {
-        switch (serverInfo.getProtocol()) {
+    private ITerminalNodeServer createNodeServer(ServerConfig serverConfig) {
+        switch (serverConfig.getProtocol()) {
             case "tcp":
                 return new TcpNodeServer(site);
             case "ws":
@@ -73,7 +77,7 @@ public class TerminalNode implements ITerminalNode {
 //            case "https":
 //                return new HttpNetworkNodeServer(site);
             default:
-                throw new EcmException(String.format("不支持的协议：%s", serverInfo.getProtocol()));
+                throw new EcmException(String.format("不支持的协议：%s", serverConfig.getProtocol()));
         }
     }
 

@@ -39,7 +39,7 @@ public class LoginTerminalCommand implements ITerminalCommand {
         OkHttpClient client = (OkHttpClient) pipeline.site().getService("$.terminal.restfull");
         Map<String, Object> info = null;
         try {
-            info = verifyAccessToken(client, config.getRestFull(), accessToken);
+            info = verifyAccessToken(client, config.getRestFullConfig(), accessToken);
         } catch (IOException e) {
             throw new CircuitException("500", e);
         }

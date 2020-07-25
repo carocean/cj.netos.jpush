@@ -9,14 +9,15 @@ import java.io.Reader;
 import java.util.Map;
 
 class NodeConfig implements INodeConfig {
-    ServerInfo serverInfo;
+    ServerConfig serverConfig;
     private String home;
-    RestFullConfig dependOnPorts;
+    RestFullConfig restFullConfig;
     RabbitMQConfig rabbitMQConfig;
+    AscConfig ascConfig;
 
     @Override
-    public ServerInfo getServerInfo() {
-        return serverInfo;
+    public ServerConfig getServerConfig() {
+        return serverConfig;
     }
 
     @Override
@@ -25,13 +26,18 @@ class NodeConfig implements INodeConfig {
     }
 
     @Override
-    public RestFullConfig getRestFull() {
-        return dependOnPorts;
+    public RestFullConfig getRestFullConfig() {
+        return restFullConfig;
     }
 
     @Override
     public RabbitMQConfig getRabbitMQConfig() {
         return rabbitMQConfig;
+    }
+
+    @Override
+    public AscConfig getAscConfig() {
+        return ascConfig;
     }
 
     @Override
@@ -42,8 +48,15 @@ class NodeConfig implements INodeConfig {
         Reader reader = new FileReader(confNodeFile);
         Map<String, Object> node = nodeyaml.load(reader);
         parseServerInfo(node);
-        parseDependOnPorts(node);
+        parseRestfulConfig(node);
         parseRabbitMQConfig(node);
+        parseAscConfig(node);
+    }
+
+    private void parseAscConfig(Map<String, Object> node) {
+        ascConfig = new AscConfig();
+        Map<String, Object> obj = (Map<String, Object>) node.get("asc");
+        ascConfig.parse(obj);
     }
 
     private void parseRabbitMQConfig(Map<String, Object> node) {
@@ -52,15 +65,15 @@ class NodeConfig implements INodeConfig {
         rabbitMQConfig.parse(obj);
     }
 
-    private void parseDependOnPorts(Map<String, Object> node) {
+    private void parseRestfulConfig(Map<String, Object> node) {
         Map<String, Object> _ports = (Map<String, Object>) node.get("restFull");
-        dependOnPorts = new RestFullConfig();
-        dependOnPorts.parse(_ports);
+        restFullConfig = new RestFullConfig();
+        restFullConfig.parse(_ports);
     }
 
     private void parseServerInfo(Map<String, Object> node) {
-        serverInfo = new ServerInfo();
-        serverInfo.parse(node);
+        serverConfig = new ServerConfig();
+        serverConfig.parse(node);
     }
 
 }

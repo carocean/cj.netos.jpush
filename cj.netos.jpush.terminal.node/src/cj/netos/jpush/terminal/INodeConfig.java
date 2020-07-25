@@ -5,12 +5,14 @@ import java.io.FileNotFoundException;
 public interface INodeConfig {
     RabbitMQConfig getRabbitMQConfig();
 
+    AscConfig getAscConfig();
+
     void load(String home) throws FileNotFoundException;
 
-    ServerInfo getServerInfo();
+    ServerConfig getServerConfig();
 
     String home();
 
-    RestFullConfig getRestFull();
+    RestFullConfig getRestFullConfig();
 
 }

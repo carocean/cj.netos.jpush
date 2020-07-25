@@ -23,11 +23,14 @@ dependencies {
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
     compile group: 'cj.studio.gateway2', name: 'cj.studio.ecm.net', version: ref_cj_studio_ecm_net_version
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
+    compile group: 'org.apache.curator', name: 'curator-framework', version: '4.3.0'
+    compile group: 'org.apache.curator', name: 'curator-recipes', version: '4.3.0'
     compile project (':cj.netos.jpush.corelib')
 }
 task copyReferences(type: Copy) {
     from configurations.compileClasspath.files {
-        include 'snakeyaml-*.jar','cj.studio.ecm.net-*.jar','okhttp-*.jar','okio-*.jar','kotlin-*.jar','amqp-client-*.jar'
+        include 'snakeyaml-*.jar','cj.studio.ecm.net-*.jar','okhttp-*.jar','okio-*.jar','kotlin-*.jar','amqp-client-*.jar',
+                'curator-*.jar','zookeeper-*.jar','jsr305-.*.jar','error_prone_*.jar','failureaccess-*.jar','guava-*.jar','listenablefuture*.jar','j2objc-*.jar'
     }
     into 'src/cj/references'
 }

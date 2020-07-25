@@ -27,7 +27,7 @@ public class TcpNodeServer implements ITerminalNodeServer, IJPushServiceProvider
     boolean isStarted;
     private int bossThreadCount;
     private int workThreadCount;
-    private ServerInfo serverInfo;
+    private ServerConfig serverConfig;
     private long heartbeat;
     private IPipelineCombination combination;
 
@@ -39,7 +39,7 @@ public class TcpNodeServer implements ITerminalNodeServer, IJPushServiceProvider
     @Override
     public Object getService(String serviceId) {
         if ("$.server.info".equals(serviceId)) {
-            return serverInfo;
+            return serverConfig;
         }
         if ("$.server.pipeline.combination".equals(serviceId)) {
             return combination;
@@ -63,11 +63,11 @@ public class TcpNodeServer implements ITerminalNodeServer, IJPushServiceProvider
     public ChannelFuture start() {
         combination = new DefaultPipelineCombination();
         INodeConfig config = (INodeConfig) site.getService("$.terminal.config");
-        this.serverInfo = config.getServerInfo();
+        this.serverConfig = config.getServerConfig();
         if (isStarted) {
-            throw new EcmException(String.format("服务器:%s已启动", serverInfo));
+            throw new EcmException(String.format("服务器:%s已启动", serverConfig));
         }
-        parseProps(serverInfo.getProps());
+        parseProps(serverConfig.getProps());
 
         bossGroup = new NioEventLoopGroup(bossThreadCount);
         workerGroup = new NioEventLoopGroup(workThreadCount);
@@ -79,13 +79,13 @@ public class TcpNodeServer implements ITerminalNodeServer, IJPushServiceProvider
 
             // Bind and start to accept incoming connections.
             Channel ch = null;
-            if ("localhost".equals(serverInfo.getHost())) {
-                ch = b.bind(serverInfo.getPort()).sync().channel();
+            if ("localhost".equals(serverConfig.getHost())) {
+                ch = b.bind(serverConfig.getPort()).sync().channel();
             } else {
-                ch = b.bind(serverInfo.getHost(), serverInfo.getPort()).sync().channel();
+                ch = b.bind(serverConfig.getHost(), serverConfig.getPort()).sync().channel();
             }
             isStarted = true;
-            CJSystem.logging().info(getClass(), String.format("服务已启动，地址:%s", serverInfo.toString()));
+            CJSystem.logging().info(getClass(), String.format("服务已启动，地址:%s", serverConfig.toString()));
             return ch.closeFuture();
         } catch (InterruptedException e) {
             throw new EcmException(e);

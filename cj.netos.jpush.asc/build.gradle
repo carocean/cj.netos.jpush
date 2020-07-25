@@ -1,0 +1,55 @@
+sourceSets {
+    main {
+        java {
+            srcDir "$projectDir/src"
+        }
+        resources {
+            srcDir "$projectDir/site-src"
+        }
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+repositories {
+}
+
+dependencies {
+    compile group: 'cj.netos.openport', name: 'cj.studio.openport', version: ref_cj_studio_openport_version
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.3.1'
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.curator', version: ref_cj_studio_orm_curator
+    compile group: 'org.apache.curator', name: 'curator-framework', version: '4.3.0'
+    compile group: 'org.apache.curator', name: 'curator-recipes', version: '4.3.0'
+    compile project (':cj.netos.jpush.corelib')
+}
+task copyRefembeds(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'cj.studio.orm.curator-*.jar'
+    }
+    into 'src/cj/refembeds'
+}
+task copyReferences(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'cj.studio.openport-*.jar','okhttp-*.jar','snakeyaml-*.jar',
+                'curator-*.jar','zookeeper-*.jar','jsr305-.*.jar','error_prone_*.jar','failureaccess-*.jar','guava-*.jar','listenablefuture*.jar','j2objc-*.jar'
+
+    }
+    into 'src/cj/references'
+}
+build.dependsOn('copyReferences')
+build.dependsOn('copyRefembeds')
+build.dependsOn(":cj.netos.jpush.corelib:release")
+
+task releaseToHost(dependsOn: copyReferences, type: Copy) {
+    dependsOn "build"
+    from 'build/libs/'
+    into '../cmdtools/asc/assemblies/website'
+    include '**/*.jar'
+    exclude '**/*-javadoc.jar', '**/*-sources.jar'
+}
+
+task release(type: Copy) {
+    dependsOn "releaseToHost"
+}

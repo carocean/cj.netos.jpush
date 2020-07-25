@@ -7,3 +7,5 @@ include 'cj.netos.jpush.device'
 
 include 'cj.netos.jpush.pusher'
 include 'cj.netos.jpush.website'
+
+include 'cj.netos.jpush.asc'

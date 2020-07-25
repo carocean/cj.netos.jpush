@@ -44,7 +44,7 @@ build.dependsOn('copyRefembeds')
 task releaseToHost(dependsOn: copyReferences, type: Copy) {
     dependsOn "build"
     from 'build/libs/'
-    into '../cmdtools/gateway/assemblies/website'
+    into '../cmdtools/jpusher/assemblies/website'
     include '**/*.jar'
     exclude '**/*-javadoc.jar', '**/*-sources.jar'
 }

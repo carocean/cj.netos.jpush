@@ -1,0 +1,71 @@
+{
+  entryPoint: {
+    plugins: [
+      {
+        name:"curator",
+        class:"cj.studio.orm.curator.CuratorPlugin",
+        parameters:{
+          desc: "生产：172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183  开发环境：47.104.128.137:2181,47.104.128.137:2182,47.104.128.137:2183",
+          connectString: "47.104.128.137:2181,47.104.128.137:2182,47.104.128.137:2183",
+          sessionTimeoutMs: "500000",
+          connectionTimeoutMs: "500000",
+          retryIntervalMs: "5000",
+          namespace: "jpush"
+        }
+      }
+    ],
+    activators: [
+      {
+        name: '开放口服务活动器',
+        class: 'cj.studio.openport.OpenportEntryPointActivator',
+        parameters: {
+          "publicAPIPath": '/portsapi',
+          checkAppSignStrategy: '',
+          checkAccessTokenStrategy: 'cj.netos.jpush.asc.program.CheckAccessTokenStrategy'
+        }
+      }
+    ]
+  },
+  assemblyInfo: {
+    assemblyTitle: "test",
+    assemblyResource: "site=/site;http.root=$(site)/web;http.jss=$(site)/jss/http;ws.jss=$(site)/jss/ws",
+    assemblyDescription: "测试pusher包",
+    assemblyConfiguration: "",
+    assemblyCompany: "cj工作室出品，lns平台制造",
+    assemblyProduct: "cj.netos.jpush.asc",
+    assemblyCopyright: "Copyright   2011",
+    assemblyTrademark: "",
+    assemblyCulture: "",
+    guid: "CD72570B-24E1-499B-AC2A-E25F6C65B681",
+    assemblyVersion: "1.0.0.0",
+    assemblyFileVersion: "1.0.0.0"
+  },
+  global: {
+    default: "zh_CN",
+    desc: "如果系统环境要求各芯片采用的语言本芯片没有，则芯片可采用默认语言"
+  },
+  serviceContainer: {
+    name: "netContainer",
+    switchFilter: "off",
+    monitor: "",
+    jss: [
+    ],
+    scans: [
+      {
+        package: "cj.netos.jpush.asc.program",
+        extName: ".class|.json|.xml",
+        exoterical: "true"
+      },
+      {
+        package: "cj.netos.jpush.asc.service",
+        extName: ".class|.json|.xml",
+        exoterical: "true"
+      },
+      {
+        package: "cj.netos.jpush.asc.ports",
+        extName: ".class|.json|.xml",
+        exoterical: "true"
+      }
+    ]
+  }
+}
