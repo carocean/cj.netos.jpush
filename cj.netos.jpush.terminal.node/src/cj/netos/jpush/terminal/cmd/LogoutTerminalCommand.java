@@ -42,7 +42,7 @@ public class LogoutTerminalCommand implements ITerminalCommand {
             endPortContainer.offline(endPort);
             pipeline.endPort(null);
         }
-        JPushFrame response = new JPushFrame(String.format("logout / net/1.0"));
+        JPushFrame response = new JPushFrame(String.format("offline / net/1.0"));
         response.head("to-person", endPort.getPerson());
         response.head("to-device", endPort.getDevice());
         response.head("nick-name", endPort.getNickName());
