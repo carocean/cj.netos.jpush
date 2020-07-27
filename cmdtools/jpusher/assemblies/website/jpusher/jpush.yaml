@@ -1,5 +1,5 @@
-host: 47.104.128.137
-#host: 172.31.210.92
+#host: 47.104.128.137
+host: 172.31.210.92
 port: 5675
 virtualHost: /jpush
 user: superadmin

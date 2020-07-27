@@ -42,6 +42,8 @@ public class DeviceMonitor extends BaseMonitor {
         cmds.put(resume.cmd(), resume);
         Command admin = new AdminCommand();
         cmds.put(admin.cmd(), admin);
+        Command logout = new LogoutCommand();
+        cmds.put(logout.cmd(), logout);
         return cmds;
     }
 }

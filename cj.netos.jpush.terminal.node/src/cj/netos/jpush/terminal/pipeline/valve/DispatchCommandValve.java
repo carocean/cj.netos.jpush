@@ -34,6 +34,8 @@ public class DispatchCommandValve extends ChannelWriter implements IValve {
         commandMap.put(adminls.cmd(), adminls);
         ITerminalCommand adminview = new AdminViewTerminalCommand();
         commandMap.put(adminview.cmd(), adminview);
+        ITerminalCommand logout = new LogoutTerminalCommand();
+        commandMap.put(logout.cmd(), logout);
     }
 
     @Override

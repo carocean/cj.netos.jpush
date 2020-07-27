@@ -16,4 +16,6 @@ public interface IDevice {
 
     void adminView(String u);
 
+    void logout();
+
 }

@@ -116,6 +116,12 @@ public class Device implements IDevice {
     }
 
     @Override
+    public void logout() {
+        JPushFrame frame = new JPushFrame("logout / NET/1.0");
+        connection.send(frame);
+    }
+
+    @Override
     public void adminLs() {
         JPushFrame frame = new JPushFrame("adminLs / NET/1.0");
         connection.send(frame);

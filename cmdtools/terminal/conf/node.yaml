@@ -1,9 +1,9 @@
 server:
   #服务地址。目前支持的协议有：tcp,ws,wss,http,https
-  host: wss://localhost:6600
+  host: ws://localhost:6600
   #开放口地址，供客户端访问此networkNode节点。注意：开放口并不一定是当前所在主机的ip和端口号，比如常要用架构是前台一般用ngnix来导转到公网生产环境的内网服务器，如果想让客户端连上只能通过nginx与它相连，那这个开放口就是ngnix的代理地址。
   #简言之这个口就是手机能连的
-  openports: wss://47.105.165.186:6600/websocket
+  openports: ws://47.105.165.186:6600/ws1
   props:
     #如果是ws|wss协议
     wspath:
@@ -19,7 +19,7 @@ asc:
   #本终端挂载的节点，不能重复
   mountPath: /terminal-1
   # 生产：172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183  开发环境：47.104.128.137:2181,47.104.128.137:2182,47.104.128.137:2183
-  connectString: 47.104.128.137:2181,47.104.128.137:2182,47.104.128.137:2183
+  connectString: 172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183
   sessionTimeoutMs: 500000
   connectionTimeoutMs: 500000
   retryIntervalMs: 5000
@@ -28,7 +28,8 @@ restFull:
   appKey: 995C2A861BE8064A1F8A022B5C0D2E36
   appSecret: 6EA4774EE78DCDF0768CA18ECF3AD1DB
   ports:
-    uc.auth: http://47.105.165.186/uc/auth.service
+    uc.auth: http://172.31.210.93/uc/auth.service
+    #uc.auth: http://47.105.165.186/uc/auth.service
   okhttp:
     readTimeout: 5000
     writeTimeout: 5000
