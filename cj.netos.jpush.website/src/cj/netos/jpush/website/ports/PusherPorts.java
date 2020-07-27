@@ -11,6 +11,7 @@ import cj.ultimate.util.StringUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @CjService(name = "/pusher.ports")
@@ -20,6 +21,9 @@ public class PusherPorts implements IPusherPorts {
 
     @Override
     public void pushToPerson(ISecuritySession securitySession, String toPerson, String headline, Map<String, String> headers, Map<String, String> parameters, String content) throws CircuitException {
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
         headers.put("to-person", toPerson);
         headers.put("sender-person", securitySession.principal());
         headers.put("sender-device",(String) securitySession.property("device"));
@@ -28,6 +32,9 @@ public class PusherPorts implements IPusherPorts {
 
     @Override
     public void pushToDevice(ISecuritySession securitySession, String toPerson, String toDevice, String headline, Map<String, String> headers, Map<String, String> parameters, String content) throws CircuitException {
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
         headers.put("to-person", toPerson);
         headers.put("to-device", toDevice);
         headers.put("sender-person", securitySession.principal());
