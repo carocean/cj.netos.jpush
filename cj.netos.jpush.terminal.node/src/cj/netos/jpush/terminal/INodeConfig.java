@@ -7,6 +7,10 @@ public interface INodeConfig {
 
     AscConfig getAscConfig();
 
+    boolean isUsableNotificationPlugin();
+
+    String getNotificationPluginHome();
+
     void load(String home) throws FileNotFoundException;
 
     ServerConfig getServerConfig();

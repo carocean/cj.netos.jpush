@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/cj.netos.jpush.device" />
             <option value="$PROJECT_DIR$/cj.netos.jpush.pusher" />
             <option value="$PROJECT_DIR$/cj.netos.jpush.terminal.node" />
+            <option value="$PROJECT_DIR$/cj.netos.jpush.terminal.plugin" />
             <option value="$PROJECT_DIR$/cj.netos.jpush.terminal.start" />
             <option value="$PROJECT_DIR$/cj.netos.jpush.website" />
           </set>

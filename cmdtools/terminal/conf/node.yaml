@@ -18,8 +18,9 @@ asc:
   namespace: jpush
   #本终端挂载的节点，不能重复
   mountPath: /terminal-1
-  # 生产：172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183  开发环境：47.104.128.137:2181,47.104.128.137:2182,47.104.128.137:2183
-  connectString: 172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183
+  # 生产：172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183  开发环境：120.27.15.205:2181,120.27.15.205:2182,120.27.15.205:2183
+#  connectString: 172.31.210.92:2181,172.31.210.92:2182,172.31.210.92:2183
+  connectString: 120.27.15.205:2181,120.27.15.205:2182,120.27.15.205:2183
   sessionTimeoutMs: 500000
   connectionTimeoutMs: 500000
   retryIntervalMs: 5000
@@ -28,15 +29,19 @@ restFull:
   appKey: 995C2A861BE8064A1F8A022B5C0D2E36
   appSecret: 6EA4774EE78DCDF0768CA18ECF3AD1DB
   ports:
-    uc.auth: http://172.31.210.93/uc/auth.service
-    #uc.auth: http://47.105.165.186/uc/auth.service
+#    uc.auth: http://172.31.210.93/uc/auth.service
+    uc.auth: http://47.105.165.186/uc/auth.service
   okhttp:
     readTimeout: 5000
     writeTimeout: 5000
     connectTimeout: 15000
+#当用户下线时的策略。使用通知，仅当目标用户所在的设备为格式如：vivo://xxx, oppo://xxxx 时才有效,非此格式的用户的终结点将关闭下线，数据由mq队列缓冲，下次上线时下发。
+#启用下发策略的目标则先将数据缓冲到插件提供的数据库，同时下发数据通知，直到用户上线，先从插件库中取得未读消息下发，mq的消费先暂停，直到下发完插件库的再继续mq消费
+notificationPlugin:
+  usable: true
 rabbitmq:
   #用于交易结果提交给网关确认
-  host: 47.104.128.137
+  host: 120.27.15.205
 #  host: 172.31.210.92
   port: 5675
   virtualHost: /jpush

@@ -3,6 +3,7 @@ rootProject.name = 'cj.netos.jpush'
 include 'cj.netos.jpush.corelib'
 include 'cj.netos.jpush.terminal.node'
 include 'cj.netos.jpush.terminal.start'
+include 'cj.netos.jpush.terminal.plugin'
 include 'cj.netos.jpush.device'
 
 include 'cj.netos.jpush.pusher'

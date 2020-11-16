@@ -15,7 +15,7 @@ public class LogoutCommand extends Command {
 
     @Override
     public String cmdDesc() {
-        return "登出";
+        return "登出。如果服务器启用了通知插件，虽然用户所有终结点都登出，但通知插件仍在消费";
     }
 
     @Override

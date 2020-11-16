@@ -55,9 +55,10 @@ task releaseTerminalStart(dependsOn: runnableJar,type: Copy) {
 }
 
 task release(type: Copy) {
-    dependsOn "releaseTerminalStart",":cj.netos.jpush.corelib:release",":cj.netos.jpush.terminal.node:release"
+    dependsOn "releaseTerminalStart",":cj.netos.jpush.corelib:release",":cj.netos.jpush.terminal.node:release",':cj.netos.jpush.terminal.plugin:release'
     doLast {
         println 'gateway 环境发布完毕!'
     }
 }
 tasks.getByPath(':cj.netos.jpush.terminal.node:release').mustRunAfter tasks.getByPath(':cj.netos.jpush.corelib:release')
+tasks.getByPath(':cj.netos.jpush.terminal.plugin:release').mustRunAfter tasks.getByPath(':cj.netos.jpush.corelib:release')

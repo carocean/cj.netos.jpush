@@ -2,11 +2,11 @@ package cj.netos.jpush.terminal;
 
 import cj.netos.jpush.EndPort;
 import cj.netos.jpush.IJPushServiceProvider;
+import cj.netos.jpush.IPersistenceMessageService;
 import cj.studio.ecm.net.CircuitException;
 import io.netty.channel.Channel;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,10 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EndPortContainer implements IEndPortContainer {
     IRabbitMQConsumer rabbitMQConsumer;
     Map<String, PersonEndPorts> endPorts;//key是person.即一个用户可拥有多个终结点，也就是一个用户可以在多个设备上登录
+    IPersistenceMessageService persistenceMessageService;
 
     public EndPortContainer(IJPushServiceProvider site) {
         endPorts = new ConcurrentHashMap<>();
         rabbitMQConsumer = (IRabbitMQConsumer) site.getService("$.terminal.rabbitMQConsumer");
+        persistenceMessageService = (IPersistenceMessageService) site.getService("$.plugin.persistenceMessageService");
     }
 
     @Override
@@ -40,6 +42,46 @@ public class EndPortContainer implements IEndPortContainer {
     //{expireTime=7200000.0, person=cj@la.netos, nickName=大地经济, pubTime=1.595424721408E12, roles=[app:users@la.netos], portal=nodepower, isExpired=false, device=b1c5321a7b40f1b7582e1d36fc04db48}
     @Override
     public EndPort online(Channel channel, Map<String, Object> info) throws CircuitException {
+        if (persistenceMessageService == null) {
+            return noNotificationOnline(channel, info);
+        }
+        return doNotificationOnline(channel, info);
+    }
+
+    private EndPort doNotificationOnline(Channel channel, Map<String, Object> info) throws CircuitException {
+        //检查用户是否绑定队列；是否在终结点；
+        EndPort endPort =  new EndPort(channel);
+        endPort.setDevice(info.get("device") + "");
+        endPort.setPerson(info.get("person") + "");
+        endPort.setNickName(info.get("nickName") + "");
+        endPort.setRoles((List<String>) info.get("roles"));
+
+        String person = info.get("person") + "";
+        PersonEndPorts personEndPorts = endPorts.get(person);
+        if (personEndPorts == null) {//用户没有终结点则新建
+            personEndPorts = new PersonEndPorts();
+            personEndPorts.setPerson(endPort.getPerson());
+            personEndPorts.setNickName(endPort.getNickName());
+            endPorts.put(endPort.getPerson(), personEndPorts);
+            //用户由空上线时首先到插件中检查未读消息并发终结点发送完后再绑定消费
+            persistenceMessageService.downstream(endPort);
+        } else if (personEndPorts.isEmpty()) {
+            //用户由空上线时首先到插件中检查未读消息并发终结点发送完后再绑定消费
+            persistenceMessageService.downstream(endPort);
+        }
+        personEndPorts.addEndPort(endPort);
+        try {
+            rabbitMQConsumer.bindEndPort(personEndPorts);
+            if (!personEndPorts.isConsumed()) {
+                rabbitMQConsumer.consumePersonQueue(personEndPorts);
+            }
+        } catch (IOException e) {
+            throw new CircuitException("500", e);
+        }
+        return endPort;
+    }
+
+    private EndPort noNotificationOnline(Channel channel, Map<String, Object> info) throws CircuitException {
         EndPort endPort = new EndPort(channel);
         endPort.setDevice(info.get("device") + "");
         endPort.setPerson(info.get("person") + "");
@@ -69,6 +111,28 @@ public class EndPortContainer implements IEndPortContainer {
         if (theEndPort == null) {
             return;
         }
+        if (persistenceMessageService == null) {
+            noNotificationOffline(theEndPort);
+            return;
+        }
+        doNotificationOffline(theEndPort);
+    }
+
+    private void doNotificationOffline(EndPort theEndPort) {
+        //通知模式不解绑，仍然消费，但消息会被订阅到插件中存储,并同时发通知给客端
+        String person = theEndPort.getPerson();
+        String device = theEndPort.getDevice();
+        PersonEndPorts personEndPorts = endPorts.get(person);
+        if (personEndPorts == null) {
+            return;
+        }
+        personEndPorts.removeEndPort(person, device);
+//        if (personEndPorts.isEmpty()) {//千万不要移除用户终结点，用它来判断是否在通知模式下消费mq
+//            endPorts.remove(person);
+//        }
+    }
+
+    private void noNotificationOffline(EndPort theEndPort) throws CircuitException {
         String person = theEndPort.getPerson();
         String device = theEndPort.getDevice();
         PersonEndPorts personEndPorts = endPorts.get(person);

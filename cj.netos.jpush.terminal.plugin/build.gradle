@@ -1,0 +1,62 @@
+group 'cj.netos.jpush'
+version engineer_version
+sourceSets {
+    main {
+        java{
+            srcDir "$projectDir/src"
+        }
+        resources{
+            srcDir "$projectDir/src"
+        }
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+repositories {
+}
+
+dependencies {
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.ecm.net', version: ref_cj_studio_ecm_net_version
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.mongodb', version: ref_cj_studio_orm_mongodb
+    compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.12.1'
+    compile fileTree(dir:'src/cj/references',include:['*.jar'])
+    compile project (':cj.netos.jpush.corelib')
+}
+
+task copyRefembeds(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'cj.studio.orm.mongodb-*.jar'
+    }
+    into 'src/cj/refembeds'
+}
+task copyReferences(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'okhttp-*.jar',
+                'snakeyaml-*.jar',
+                'cj.lns.chip.sos.cube-*.jar', 'mongodb-driver-*.jar', 'bson-*.jar',
+                'cj.netos.jpush.corelib-*.jar'
+
+    }
+    into 'src/cj/references'
+}
+build.dependsOn('copyReferences')
+build.dependsOn('copyRefembeds')
+
+task releaseToTerminal(type: Copy){
+    dependsOn "build"
+    from 'build/libs/'
+    into '../cmdtools/terminal/plugin'
+    include '**/*.jar'
+    exclude '**/*-javadoc.jar','**/*-sources.jar'
+}
+
+task release(type:Copy){
+    dependsOn "releaseToTerminal"
+}
+
+

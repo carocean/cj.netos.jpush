@@ -2,6 +2,7 @@ package cj.netos.jpush.terminal;
 
 import cj.netos.jpush.EndPort;
 import cj.netos.jpush.IJPushServiceProvider;
+import cj.netos.jpush.IPersistenceMessageService;
 import cj.netos.jpush.JPushFrame;
 import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.net.CircuitException;
@@ -19,7 +20,7 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
     RabbitMQConfig config;
     Channel channel;
     Connection connection;
-
+    IPersistenceMessageService persistenceMessageService;
 
     @Override
     public boolean isOpened() {
@@ -34,6 +35,7 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
     @Override
     public Channel open(IJPushServiceProvider site) throws CircuitException {
         config = ((NodeConfig) site.getService("$.terminal.config")).rabbitMQConfig;
+        persistenceMessageService = (IPersistenceMessageService) site.getService("$.plugin.persistenceMessageService");
         String host = config.getHost();
         int port = config.getPort();
         String virtualHost = config.getVirtualHost();
@@ -174,7 +176,8 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
         PersonQueueConfig queueConfig = config.getPersonQueueConfig();
         String queueName = String.format("%s%s", queueConfig.prefixName, personEndPorts.getPerson());
         try {
-            String customTag = channel.basicConsume(queueName, config.isAutoAck(), new CLAFConsumerDelivery(channel, personEndPorts));
+//            long count = channel.consumerCount(queueName);
+            String customTag = channel.basicConsume(queueName, config.isAutoAck(), new CLAFConsumerDelivery(channel, persistenceMessageService, personEndPorts));
             personEndPorts.setConsumerTag(customTag);
             personEndPorts.setConsumed(true);
         } catch (IOException e) {
@@ -196,9 +199,11 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
 
     class CLAFConsumerDelivery extends DefaultConsumer {
         PersonEndPorts personEndPorts;
+        IPersistenceMessageService persistenceMessageService;
 
-        public CLAFConsumerDelivery(Channel channel, PersonEndPorts personEndPorts) {
+        public CLAFConsumerDelivery(Channel channel, IPersistenceMessageService persistenceMessageService, PersonEndPorts personEndPorts) {
             super(channel);
+            this.persistenceMessageService = persistenceMessageService;
             this.personEndPorts = personEndPorts;
         }
 
@@ -246,8 +251,15 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
                 for (Map.Entry<String, Object> entry : headers.entrySet()) {
                     frame.head(entry.getKey(), entry.getValue() + "");
                 }
-                for (EndPort endPort : personEndPorts.endPorts()) {
-                    endPort.writeFrame(frame.copy());
+                if (persistenceMessageService != null && personEndPorts.isEmpty()) {//只要开启了通知模式且用户没一个终结点在线，一律采用插件缓冲消息，只是device不是合作推送的厂商的不发通知而已，它会在用户上线时一次性下行
+                    persistenceMessageService.writeFrame(frame.copy(), personEndPorts.getPerson(), personEndPorts.getNickName());
+                } else {
+                    for (EndPort endPort : personEndPorts.endPorts()) {
+                        endPort.writeFrame(frame.copy());
+                        if (persistenceMessageService != null) {
+                            persistenceMessageService.checkAndUpdateBuddyDevice(endPort);
+                        }
+                    }
                 }
                 frame.dispose();
                 channel.basicAck(envelope.getDeliveryTag(), false);

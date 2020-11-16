@@ -1,5 +1,6 @@
 package cj.netos.jpush.terminal;
 
+import javafx.beans.binding.ObjectBinding;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,6 +15,7 @@ class NodeConfig implements INodeConfig {
     RestFullConfig restFullConfig;
     RabbitMQConfig rabbitMQConfig;
     AscConfig ascConfig;
+    boolean usableNotificationPlugin;
 
     @Override
     public ServerConfig getServerConfig() {
@@ -41,6 +43,16 @@ class NodeConfig implements INodeConfig {
     }
 
     @Override
+    public boolean isUsableNotificationPlugin() {
+        return usableNotificationPlugin;
+    }
+
+    @Override
+    public String getNotificationPluginHome() {
+        return String.format("%s%splugin%s", home, File.separator, File.separator);
+    }
+
+    @Override
     public void load(String home) throws FileNotFoundException {
         this.home = home;
         Yaml nodeyaml = new Yaml();
@@ -51,6 +63,16 @@ class NodeConfig implements INodeConfig {
         parseRestfulConfig(node);
         parseRabbitMQConfig(node);
         parseAscConfig(node);
+        parseNotificationPluginConfig(node);
+    }
+
+    private void parseNotificationPluginConfig(Map<String, Object> node) {
+        Map<String, Object> config = (Map<String, Object>) node.get("notificationPlugin");
+        if (config == null) {
+            return;
+        }
+        boolean usable = config.get("usable") == null ? false : (boolean) config.get("usable");
+        this.usableNotificationPlugin = usable;
     }
 
     private void parseAscConfig(Map<String, Object> node) {

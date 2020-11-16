@@ -1,6 +1,7 @@
 package cj.netos.jpush.terminal.cmd;
 
 import cj.netos.jpush.EndPort;
+import cj.netos.jpush.IPersistenceMessageService;
 import cj.netos.jpush.IPipeline;
 import cj.netos.jpush.JPushFrame;
 import cj.netos.jpush.terminal.*;
@@ -36,11 +37,17 @@ public class LogoutTerminalCommand implements ITerminalCommand {
         PersonEndPorts personEndPorts = endPortContainer.getPersonEndPorts(endPort.getPerson());
         boolean isConsumed = false;
         if (personEndPorts != null) {
-            IRabbitMQConsumer rabbitMQConsumer = (IRabbitMQConsumer) pipeline.site().getService("$.terminal.rabbitMQConsumer");
-            rabbitMQConsumer.stopConsumePersonQueue(personEndPorts);
-            isConsumed = personEndPorts.isConsumed();
-            endPortContainer.offline(endPort);
-            pipeline.endPort(null);
+            IPersistenceMessageService persistenceMessageService = (IPersistenceMessageService) pipeline.site().getService("$.plugin.persistenceMessageService");
+            if (persistenceMessageService == null) {
+                IRabbitMQConsumer rabbitMQConsumer = (IRabbitMQConsumer) pipeline.site().getService("$.terminal.rabbitMQConsumer");
+                rabbitMQConsumer.stopConsumePersonQueue(personEndPorts);
+                isConsumed = personEndPorts.isConsumed();
+                endPortContainer.offline(endPort);
+                pipeline.endPort(null);
+            }else{
+                isConsumed = personEndPorts.isConsumed();
+                endPortContainer.offline(endPort);
+            }
         }
         JPushFrame response = new JPushFrame(String.format("offline / net/1.0"));
         response.head("to-person", endPort.getPerson());

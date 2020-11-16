@@ -1,0 +1,48 @@
+assemblyInfo:
+  assemblyTitle: cj.netos.jpush.terminal.plugin
+  #assemblyResource配置web资源结构，在程序集的jar中site是是站点的根，在配置源码工程结构时site必须在资源目录下，资源目录可起任何名字，它在打包时并不会生成了jar中，因此上site指定的名字才是真正的资源根。
+  assemblyResource: site=/site;http.root=$(site)/web;http.jss=$(site)/jss/http;ws.jss=$(site)/jss/ws
+  assemblyDescription: 通知插件。侦听如果在下线状态且是合作推送的目标，则采用本插件提供的功能进行数据缓冲、通知下达
+  assemblyConfiguration:
+  assemblyCompany: cj工作室
+  assemblyProduct: cj.netos.jpush.terminal.plugin
+  assemblyCopyright: Copyright   2011
+  assemblyTrademark:
+  assemblyCulture:
+  guid: E400A7A2-1E0E-4483-B6FD-24B539EDF349
+  assemblyVersion: 1.0.0.0
+  assemblyFileVersion: 1.0.0.0
+  assemblyIcon:
+  assemblyDeveloperHome:
+entryPoint:
+  plugins:
+    - name: mongodb
+      class: cj.studio.orm.mongodb.MongoDBPlugin
+      parameters:
+#        remotes: "['172.31.210.92:27017']"
+        remotes: "['120.27.15.205:27017']"
+        isTrustConnect: "false"
+        database: "admin"
+        user: 'superadmin'
+        password: '!jofers0408'
+  activators:
+    - name: 活动器
+      class: cj.netos.jpush.terminal.plugin.TerminalPluginEntryPointActivator
+      parameters:
+        name:
+        desc:
+global:
+  default: zh_CN
+  desc: 如果系统环境要求各芯片采用的语言本芯片没有，则芯片可采用默认语言
+serviceContainer:
+  name: netContainer
+  #switchfilter用于在jss中拦截java服务，由于要匹配服务请求id，因此损耗性能，switchfilter=on为启用，switchfilter=off为关闭
+  switchFilter: off
+  #如果monitors只有单个，可以使用monitor属性
+  #cj.netos.rabbitmq.DefaultRabbitMQMonitor,cj.studio.orm.redis.RedisServiceContainerMonitor
+  monitors:
+  jss:
+  scans:
+    - package: cj.netos.jpush.terminal.plugin
+      extName: .class|.json|.xml
+      exoterical: true

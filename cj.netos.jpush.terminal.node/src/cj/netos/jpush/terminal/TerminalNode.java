@@ -10,7 +10,6 @@ import cj.studio.ecm.net.CircuitException;
 import io.netty.channel.ChannelFuture;
 import okhttp3.OkHttpClient;
 
-import java.io.FileNotFoundException;
 import java.util.concurrent.TimeUnit;
 
 @CjService(name = "terminalNode", isExoteric = true)
@@ -22,6 +21,7 @@ public class TerminalNode implements ITerminalNode {
     IEndPortContainer endPortContainer;
     IRabbitMQConsumer rabbitMQConsumer;
     IAscRegistry ascRegistry;//注册中心注册器
+    INotificationPlugin notificationPlugin;
 
     @Override
     public void entrypoint(String home) throws Exception {
@@ -29,6 +29,11 @@ public class TerminalNode implements ITerminalNode {
         nodeConfig = new NodeConfig();
         nodeConfig.load(home);
         buildOkHttpClient();
+
+        if (nodeConfig.isUsableNotificationPlugin()) {
+            notificationPlugin = new NotificationPlugin();
+            notificationPlugin.start(nodeConfig);
+        }
 
         nodeServer = createNodeServer(nodeConfig.getServerConfig());
 
@@ -99,6 +104,12 @@ public class TerminalNode implements ITerminalNode {
             }
             if ("$.terminal.rabbitMQConsumer".equals(serviceId)) {
                 return rabbitMQConsumer;
+            }
+            if ("$.plugin.persistenceMessageService".equals(serviceId)) {
+                if (notificationPlugin == null) {
+                    return null;
+                }
+                return notificationPlugin.getPersistenceMessageService();
             }
             return null;
         }
