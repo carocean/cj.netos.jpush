@@ -65,7 +65,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
             return;
         }
         //保存
-        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE,String.format("{'tuple.person':'%s'}",endPort.getPerson()));
+//        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE,String.format("{'tuple.person':'%s'}",endPort.getPerson()));
         Map<String, String> map = new HashMap<>();
         map.put("person", endPort.getPerson());
         map.put("device", endPort.getDevice());
