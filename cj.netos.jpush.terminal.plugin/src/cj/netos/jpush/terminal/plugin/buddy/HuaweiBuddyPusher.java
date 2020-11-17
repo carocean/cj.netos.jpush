@@ -3,6 +3,7 @@ package cj.netos.jpush.terminal.plugin.buddy;
 import cj.netos.jpush.JPushFrame;
 import cj.netos.jpush.terminal.plugin.IBuddyPusher;
 import cj.netos.jpush.terminal.plugin.NotificationParser;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.IServiceAfter;
 import cj.studio.ecm.IServiceSite;
 import cj.studio.ecm.annotation.CjService;
@@ -96,7 +97,7 @@ public class HuaweiBuddyPusher implements IBuddyPusher, IServiceAfter {
             response = call.execute();
             //{"access_token":"CgB6e3x9CDWm7Ltbl4WKO7NHov99ZdPID47ksABADphaTTzgZyCcWVMiKQm7sjGcOOHndoPIR5HS7VX99d4mFezs","expires_in":3600,"token_type":"Bearer"}
             final String text = response.body().string();
-            System.out.println(text);
+            CJSystem.logging().info(getClass(),String.format("%s",text));
         } catch (IOException e) {
             e.printStackTrace();
         }

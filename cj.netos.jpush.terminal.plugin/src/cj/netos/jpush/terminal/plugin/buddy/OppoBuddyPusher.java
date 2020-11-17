@@ -3,6 +3,7 @@ package cj.netos.jpush.terminal.plugin.buddy;
 import cj.netos.jpush.JPushFrame;
 import cj.netos.jpush.terminal.plugin.IBuddyPusher;
 import cj.netos.jpush.terminal.plugin.NotificationParser;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.IServiceAfter;
 import cj.studio.ecm.IServiceSite;
 import cj.studio.ecm.annotation.CjService;
@@ -36,10 +37,7 @@ public class OppoBuddyPusher implements IBuddyPusher, IServiceAfter {
             notification.setContent(NotificationParser.parseContent(frame));
             Target target = Target.build(regId); //创建发送对象
             Result result = sender.unicastNotification(notification, target);  //发送单推消息
-            result.getStatusCode(); // 获取http请求状态码
-            result.getReturnCode(); // 获取平台返回码
-            result.getMessageId();  // 获取平台返回的messageId
-            System.out.println(String.format("------%s", result));
+            CJSystem.logging().info(getClass(),String.format("%s",result));
         } catch (Exception e) {
             e.printStackTrace();
         }

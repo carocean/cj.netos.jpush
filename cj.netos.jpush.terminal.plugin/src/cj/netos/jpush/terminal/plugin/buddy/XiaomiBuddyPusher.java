@@ -3,6 +3,7 @@ package cj.netos.jpush.terminal.plugin.buddy;
 import cj.netos.jpush.JPushFrame;
 import cj.netos.jpush.terminal.plugin.IBuddyPusher;
 import cj.netos.jpush.terminal.plugin.NotificationParser;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.IServiceAfter;
 import cj.studio.ecm.IServiceSite;
 import cj.studio.ecm.annotation.CjService;
@@ -44,7 +45,7 @@ public class XiaomiBuddyPusher implements IBuddyPusher, IServiceAfter {
         Result result = null;
         try {
             result = sender.send(message, regId, 3);////根据regID，发送消息到指定设备上
-            System.out.println("MessageId: " + result);
+            CJSystem.logging().info(getClass(),String.format("%s",result));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {

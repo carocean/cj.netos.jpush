@@ -3,6 +3,7 @@ package cj.netos.jpush.terminal.plugin.buddy;
 import cj.netos.jpush.JPushFrame;
 import cj.netos.jpush.terminal.plugin.IBuddyPusher;
 import cj.netos.jpush.terminal.plugin.NotificationParser;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.IServiceAfter;
 import cj.studio.ecm.IServiceSite;
 import cj.studio.ecm.annotation.CjService;
@@ -55,7 +56,7 @@ public class VivoBuddyPusher implements IBuddyPusher, IServiceAfter {
   description：超出发送时间允许范围
 }
              */
-            System.out.println(resultMessage);
+            CJSystem.logging().info(getClass(),String.format("%s",resultMessage));
         } catch (Exception e) {
             e.printStackTrace();
         }
