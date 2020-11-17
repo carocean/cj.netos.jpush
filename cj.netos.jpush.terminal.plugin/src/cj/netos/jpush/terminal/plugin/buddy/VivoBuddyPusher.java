@@ -41,7 +41,7 @@ public class VivoBuddyPusher implements IBuddyPusher, IServiceAfter {
                     .title(NotificationParser.parseTitle(frame))
                     .content(NotificationParser.parseContent(frame))
                     .timeToLive(10000)
-                    .skipType(2)
+                    .skipType(1)
 //                    .skipContent("http://www.vivo.com")
                     .networkType(-1)
                     .requestId(UUID.randomUUID().toString())

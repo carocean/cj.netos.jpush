@@ -35,6 +35,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
 
         List<String> devices = getBuddyDeviceOfPerson(person);
         for (String device : devices) {
+            frame.head("sender-nick",nickName);
             buddyPusherFactory.push(frame,device);
         }
 //
@@ -67,6 +68,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         Map<String, String> map = new HashMap<>();
         map.put("person", endPort.getPerson());
         map.put("device", endPort.getDevice());
+        home.saveDoc(_COL_NAME_MESSAGE_DEVICE,new TupleDocument<>(map));
     }
 
     private synchronized void totalAdd(String person) {
