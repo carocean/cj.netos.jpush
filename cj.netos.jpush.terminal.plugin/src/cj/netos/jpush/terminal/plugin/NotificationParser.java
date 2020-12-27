@@ -20,7 +20,7 @@ public class NotificationParser {
                 case "pushMessage":
                     switch (contentType) {
                         case "text":
-                            if (StringUtil.isEmpty(content)) {
+                            if (StringUtil.isEmpty(text)) {
                                 content = "发信息给你！";
                             } else {
                                 content = text.length() > 40 ? text.substring(0, 40) : text;
@@ -56,7 +56,7 @@ public class NotificationParser {
             String text = new String(data);
             switch (frame.command()) {
                 case "pushDocument":
-                    if (StringUtil.isEmpty(content)) {
+                    if (StringUtil.isEmpty(text)) {
                         content = "发信息给你！";
                     } else {
                         content = text.length() > 40 ? text.substring(0, 40) : text;
@@ -86,7 +86,7 @@ public class NotificationParser {
             String text = new String(data);
             switch (frame.command()) {
                 case "pushDocument":
-                    if (StringUtil.isEmpty(content)) {
+                    if (StringUtil.isEmpty(text)) {
                         content = "发信息给你！";
                     } else {
                         content = text.length() > 40 ? text.substring(0, 40) : text;

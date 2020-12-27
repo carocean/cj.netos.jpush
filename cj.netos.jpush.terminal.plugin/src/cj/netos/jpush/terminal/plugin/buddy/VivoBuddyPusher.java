@@ -47,7 +47,7 @@ public class VivoBuddyPusher implements IBuddyPusher, IServiceAfter {
                     .networkType(-1)
                     .requestId(UUID.randomUUID().toString())
 //推送模式 0：正式推送；1：测试推送，不填默认为0（测试推送，只能给web界面录入的测试用户推送；审核中应用，只能用测试推送）
-                    .pushMode(1)
+                    .pushMode(0)
                     .build();
             Result resultMessage = sender.sendSingle(singleMessage);
             /*
