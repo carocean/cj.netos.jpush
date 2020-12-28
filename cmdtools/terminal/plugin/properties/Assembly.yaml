@@ -40,7 +40,7 @@ serviceContainer:
   switchFilter: off
   #如果monitors只有单个，可以使用monitor属性
   #cj.netos.rabbitmq.DefaultRabbitMQMonitor,cj.studio.orm.redis.RedisServiceContainerMonitor
-  monitors:
+  monitors: cj.studio.orm.redis.RedisServiceContainerMonitor
   jss:
   scans:
     - package: cj.netos.jpush.terminal.plugin

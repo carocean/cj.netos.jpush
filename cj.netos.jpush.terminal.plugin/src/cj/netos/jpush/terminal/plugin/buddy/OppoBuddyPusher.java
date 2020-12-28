@@ -7,10 +7,7 @@ import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.IServiceAfter;
 import cj.studio.ecm.IServiceSite;
 import cj.studio.ecm.annotation.CjService;
-import com.oppo.push.server.Notification;
-import com.oppo.push.server.Result;
-import com.oppo.push.server.Sender;
-import com.oppo.push.server.Target;
+import com.oppo.push.server.*;
 
 @CjService(name = "oppoBuddyPusher")
 public class OppoBuddyPusher implements IBuddyPusher, IServiceAfter {
@@ -36,6 +33,7 @@ public class OppoBuddyPusher implements IBuddyPusher, IServiceAfter {
             notification.setTitle(NotificationParser.parseTitle(frame));
             notification.setContent(NotificationParser.parseContent(frame));
             Target target = Target.build(regId); //创建发送对象
+            target.setTargetType(TargetType.REGISTRATION_ID);
             Result result = sender.unicastNotification(notification, target);  //发送单推消息
             CJSystem.logging().info(getClass(),String.format("%s",result));
         } catch (Exception e) {

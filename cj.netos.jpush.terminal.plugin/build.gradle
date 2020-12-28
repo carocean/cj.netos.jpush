@@ -24,6 +24,8 @@ dependencies {
     compile group: 'cj.studio.gateway2', name: 'cj.studio.ecm.net', version: ref_cj_studio_ecm_net_version
     compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.mongodb', version: ref_cj_studio_orm_mongodb
     compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.12.1'
+    compile group: 'redis.clients', name: 'jedis', version: '3.1.0'
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.redis', version: ref_cj_studio_orm_redis
     compile fileTree(dir:'src/cj/references',include:['*.jar'])
     compile project (':cj.netos.jpush.corelib')
 }
@@ -39,7 +41,8 @@ task copyReferences(type: Copy) {
         include 'okhttp-*.jar',
                 'snakeyaml-*.jar',
                 'cj.lns.chip.sos.cube-*.jar', 'mongodb-driver-*.jar', 'bson-*.jar',
-                'cj.netos.jpush.corelib-*.jar'
+                'cj.netos.jpush.corelib-*.jar',
+                'jedis-*.jar','cj.studio.orm.redis-*.jar','commons-pool2-*.jar'
 
     }
     into 'src/cj/references'

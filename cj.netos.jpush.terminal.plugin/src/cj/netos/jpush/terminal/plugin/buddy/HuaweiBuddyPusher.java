@@ -68,13 +68,13 @@ public class HuaweiBuddyPusher implements IBuddyPusher, IServiceAfter {
                 "        \"android\": {\n" +
                 "            \"notification\": {\n" +
                 "                \"click_action\": {\n" +
-                "                    \"type\": 2,\n" +
+                "                    \"type\": 3,\n" +
                 "                    \"url\": \"\"\n" +
                 "                },\n" +
                 "                \"badge\": {\n" +
                 "                    \"add_num\": 1,\n" +
-                "                    \"class\": \"cj.netos.netos_app.MainActivity\",\n" +
-                "                    \"set_num\": " + (new Random().nextInt(100)) + "\n" +
+                "                    \"class\": \"cj.netos.netos_app.MainActivity\"\n" +
+//                "                    \"set_num\": 1\n" +
                 "                }\n" +
                 "            },\n" +
                 "            \"ttl\": \"1000\"\n" +

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotificationParser {
+
     public static String parseContent(JPushFrame frame) {
         String content = "";
         if (frame.url().startsWith("/chat/room/message")) {
@@ -39,27 +40,42 @@ public class NotificationParser {
                             content = "转账给您！";
                             break;
                         case "absorbTo":
-                            Map<String, Object> map = new Gson().fromJson(text, HashMap.class);
-                            content = "收到洇金: " + new BigDecimal(map.get("realAmount")+"").setScale(14, RoundingMode.DOWN);
+                            String amount = frame.parameter("amount");
+                            String times = frame.parameter("times");
+                            if (StringUtil.isEmpty(amount)) {
+                                break;
+                            }
+                            BigDecimal bigAmount=new BigDecimal(amount);
+                            if (bigAmount.compareTo(BigDecimal.ZERO) == 0) {
+                                break;
+                            }
+                            bigAmount=bigAmount.divide(new BigDecimal("100.00"),14, RoundingMode.DOWN);
+                            content = String.format("¥%s 本次累计%s笔", bigAmount, times);
                             break;
                         default:
-                            content="有新消息";
+                            content = "有新消息";
                             break;
                     }
                     break;
                 default:
-                    content="有新消息";
+                    content = "有新消息";
                     break;
             }
         } else if (frame.url().startsWith("/netflow/channel")) {
             byte[] data = frame.content().readFully();
             String text = new String(data);
+//            CJSystem.logging().info(NotificationParser.class.getClass(),String.format("netflow:%s",text));
             switch (frame.command()) {
                 case "pushDocument":
                     if (StringUtil.isEmpty(text)) {
                         content = "发信息给你！";
                     } else {
-                        content = text.length() > 40 ? text.substring(0, 40) : text;
+                        Map<String, Object> map = new Gson().fromJson(text, HashMap.class);
+                        content = (String) map.get("content");
+                        if (StringUtil.isEmpty(content)) {
+                            content = "发信息给你！";
+                        }
+                        content = content.length() > 40 ? content.substring(0, 40) : content;
                     }
                     break;
                 case "likeDocument":
@@ -84,12 +100,18 @@ public class NotificationParser {
         } else if (frame.url().startsWith("/geosphere/receptor")) {
             byte[] data = frame.content().readFully();
             String text = new String(data);
+//            CJSystem.logging().info(NotificationParser.class.getClass(),String.format("geosphere:%s",text));
             switch (frame.command()) {
                 case "pushDocument":
                     if (StringUtil.isEmpty(text)) {
                         content = "发信息给你！";
                     } else {
-                        content = text.length() > 40 ? text.substring(0, 40) : text;
+                        Map<String, Object> map = new Gson().fromJson(text, HashMap.class);
+                        content = (String) map.get("text");
+                        if (StringUtil.isEmpty(content)) {
+                            content = "发信息给你！";
+                        }
+                        content = content.length() > 40 ? content.substring(0, 40) : content;
                     }
                     break;
                 case "likeDocument":
@@ -118,6 +140,7 @@ public class NotificationParser {
     }
 
     public static String parseTitle(JPushFrame frame) {
+//        CJSystem.logging().info(NotificationParser.class.getClass(), new String(frame.copy().toBytes()));
         String title = "";
         String contentType = frame.parameter("contentType");
         String sender = frame.head("sender-nick");
@@ -127,7 +150,7 @@ public class NotificationParser {
                 case "pushMessage":
                     switch (contentType) {
                         case "text":
-                            title = String.format("%s对你说：", sender);
+                            title = String.format("%s 对你说：", sender);
                             break;
                         case "audio":
                         case "image":
@@ -138,21 +161,21 @@ public class NotificationParser {
                             title = String.format("%s：", sender);
                             break;
                         case "absorbTo":
-                            title = String.format("洇金到：", sender);
+                            title = String.format("洇金到：");
                             break;
                         default:
-                            title="发信息给你";
+                            title = "发信息给你";
                             break;
                     }
                     break;
                 default:
-                    title="发信息给你";
+                    title = "发信息给你";
                     break;
             }
         } else if (frame.url().startsWith("/netflow/channel")) {
             switch (frame.command()) {
                 case "pushDocument":
-                    title = String.format("%s发来网流：", sender);
+                    title = String.format("%s 发来网流：", sender);
                     break;
                 case "likeDocument":
                     title = String.format("%s：", sender);
@@ -176,7 +199,7 @@ public class NotificationParser {
         } else if (frame.url().startsWith("/geosphere/receptor")) {
             switch (frame.command()) {
                 case "pushDocument":
-                    title = String.format("%s发来地圈：", sender);
+                    title = String.format("%s 发来地圈：", sender);
                     break;
                 case "likeDocument":
                     title = String.format("%s：", sender);
@@ -202,4 +225,5 @@ public class NotificationParser {
         }
         return title;
     }
+
 }

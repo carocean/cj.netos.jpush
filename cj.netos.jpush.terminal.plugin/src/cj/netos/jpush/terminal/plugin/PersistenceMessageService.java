@@ -6,10 +6,13 @@ import cj.lns.chip.sos.cube.framework.TupleDocument;
 import cj.netos.jpush.EndPort;
 import cj.netos.jpush.IPersistenceMessageService;
 import cj.netos.jpush.JPushFrame;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.annotation.CjExotericalType;
 import cj.studio.ecm.annotation.CjService;
+import cj.studio.ecm.annotation.CjServiceInvertInjection;
 import cj.studio.ecm.annotation.CjServiceRef;
 import cj.studio.ecm.net.CircuitException;
+import cj.ultimate.util.StringUtil;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -23,23 +26,35 @@ public class PersistenceMessageService extends AbstractService implements IPersi
     @CjServiceRef
     IBuddyPusherFactory buddyPusherFactory;
 
+    @CjServiceRef
+    IAbsorbNotifyWriter absorbNotifyWriter;
+
     @Override
     public void writeFrame(JPushFrame frame, String person, String nickName) throws CircuitException {
         PersistenceMessage message = new PersistenceMessage();
         message.setCtime(System.currentTimeMillis());
         message.setPerson(person);
         message.setNickName(nickName);
-        message.setData(new String(frame.toBytes()));
+        JPushFrame copy = frame.copy();
+        message.setData(new String(copy.toBytes()));
+        copy.dispose();
         home.saveDoc(_COL_NAME_MESSAGE_UNREDS, new TupleDocument<>(message));
         totalAdd(person);
 
         List<String> devices = getBuddyDeviceOfPerson(person);
         for (String device : devices) {
-            frame.head("sender-nick",nickName);
-            buddyPusherFactory.push(frame,device);
+            copy = frame.copy();
+            copy.head("to-nick", nickName);
+            String senderNick = absorbNotifyWriter.getSenderNick(copy.head("sender-person"));
+            if (!StringUtil.isEmpty(senderNick)) {
+                copy.head("sender-nick", senderNick);
+            }
+            buddyPusherFactory.push(copy, device);
+            copy.dispose();
         }
 //
     }
+
 
     private List<String> getBuddyDeviceOfPerson(String person) {
         String cjql = String.format("select {'tuple':'*'} from tuple %s %s where {'tuple.person':'%s'}",
@@ -69,7 +84,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         Map<String, String> map = new HashMap<>();
         map.put("person", endPort.getPerson());
         map.put("device", endPort.getDevice());
-        home.saveDoc(_COL_NAME_MESSAGE_DEVICE,new TupleDocument<>(map));
+        home.saveDoc(_COL_NAME_MESSAGE_DEVICE, new TupleDocument<>(map));
     }
 
     private synchronized void totalAdd(String person) {
