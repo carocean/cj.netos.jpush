@@ -33,10 +33,10 @@ public class XiaomiBuddyPusher implements IBuddyPusher, IServiceAfter {
         com.xiaomi.xmpush.server.Sender sender = new Sender(secret);
         String messagePayload = NotificationParser.parseContent(frame);
         String title = NotificationParser.parseTitle(frame);
-        String description = "";
+        String description =messagePayload;
         Message message = new Message.Builder()
                 .title(title)
-                .description(description).payload(messagePayload)
+                .description(description)
                 .restrictedPackageName("cj.netos.netos_app")
                 .notifyType(-1)     //-1（系统默认值）：以上三种效果都有
                 .passThrough(0)  //消息使用通知栏方式
