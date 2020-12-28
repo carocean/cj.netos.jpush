@@ -43,10 +43,12 @@ public class NotificationParser {
                             String amount = frame.parameter("amount");
                             String times = frame.parameter("times");
                             if (StringUtil.isEmpty(amount)) {
+                                content = "进地微去看看吧";
                                 break;
                             }
                             BigDecimal bigAmount=new BigDecimal(amount);
                             if (bigAmount.compareTo(BigDecimal.ZERO) == 0) {
+                                content = "进地微去看看吧";
                                 break;
                             }
                             bigAmount=bigAmount.divide(new BigDecimal("100.00"),14, RoundingMode.DOWN);
