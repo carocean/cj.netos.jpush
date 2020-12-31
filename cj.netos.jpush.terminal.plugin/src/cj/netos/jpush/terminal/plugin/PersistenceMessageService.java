@@ -41,11 +41,11 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         home.saveDoc(_COL_NAME_MESSAGE_UNREDS, new TupleDocument<>(message));
         totalAdd(person);
 
-        long unreadCount=getUnreadCount(person);
+        long unreadCount = getUnreadCount(person);
         List<String> devices = getBuddyDeviceOfPerson(person);
         for (String device : devices) {
             copy = frame.copy();
-            copy.head("unread-count",unreadCount+"");
+            copy.head("unread-count", unreadCount + "");
             copy.head("to-nick", nickName);
             String senderNick = absorbNotifyWriter.getSenderNick(copy.head("sender-person"));
             if (!StringUtil.isEmpty(senderNick)) {
@@ -53,9 +53,9 @@ public class PersistenceMessageService extends AbstractService implements IPersi
             }
             try {
                 buddyPusherFactory.push(copy, device);
-            }catch (Exception e){
-                CJSystem.logging().error(getClass(),e);
-            }finally {
+            } catch (Exception e) {
+                CJSystem.logging().error(getClass(), e);
+            } finally {
                 copy.dispose();
             }
         }
@@ -63,7 +63,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
     }
 
     private long getUnreadCount(String person) {
-        String where=String.format("{'tuple.person':'%s'}",person);
+        String where = String.format("{'tuple.person':'%s'}", person);
         long unread = home.tupleCount(_COL_NAME_MESSAGE_UNREDS, where);
         return unread;
     }
@@ -85,18 +85,24 @@ public class PersistenceMessageService extends AbstractService implements IPersi
 
     @Override
     public void checkAndUpdateBuddyDevice(EndPort endPort) {
-        if (endPort.getDevice().indexOf("://") < 0) {
+        String device = endPort.getDevice();
+        String person = endPort.getPerson();
+        int pos = device.indexOf("://");
+        if (pos < 0) {
             return;
         }
-        boolean exists = home.tupleCount(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.device':'%s'}", endPort.getPerson(), endPort.getDevice())) > 0;
+
+        boolean exists = home.tupleCount(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.device':'%s'}", person, device)) > 0;
         if (exists) {
             return;
         }
+        String brand = device.substring(0, pos);
         //保存
-//        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE,String.format("{'tuple.person':'%s'}",endPort.getPerson()));
+        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.brand':'%s'}", person, brand));
         Map<String, String> map = new HashMap<>();
-        map.put("person", endPort.getPerson());
-        map.put("device", endPort.getDevice());
+        map.put("person", person);
+        map.put("device", device);
+        map.put("brand", brand);
         home.saveDoc(_COL_NAME_MESSAGE_DEVICE, new TupleDocument<>(map));
     }
 
