@@ -139,7 +139,7 @@ public class AbsorbNotifyWriter implements IAbsorbNotifyWriter, IServiceAfter, I
     }
 
     @Override
-    public void checkAndSendAbsorbNotify(String person, String nick) {
+    public void checkAndSendAbsorbNotify(String person, String nick) throws CircuitException {
         String key = String.format("%s/%s", KEY_RECEIVER, person);
         Map<String, String> map = jedisCluster.hgetAll(key);
         if (map == null||map.isEmpty()) {

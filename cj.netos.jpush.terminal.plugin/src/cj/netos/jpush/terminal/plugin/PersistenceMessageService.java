@@ -41,18 +41,31 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         home.saveDoc(_COL_NAME_MESSAGE_UNREDS, new TupleDocument<>(message));
         totalAdd(person);
 
+        long unreadCount=getUnreadCount(person);
         List<String> devices = getBuddyDeviceOfPerson(person);
         for (String device : devices) {
             copy = frame.copy();
+            copy.head("unread-count",unreadCount+"");
             copy.head("to-nick", nickName);
             String senderNick = absorbNotifyWriter.getSenderNick(copy.head("sender-person"));
             if (!StringUtil.isEmpty(senderNick)) {
                 copy.head("sender-nick", senderNick);
             }
-            buddyPusherFactory.push(copy, device);
-            copy.dispose();
+            try {
+                buddyPusherFactory.push(copy, device);
+            }catch (Exception e){
+                CJSystem.logging().error(getClass(),e);
+            }finally {
+                copy.dispose();
+            }
         }
 //
+    }
+
+    private long getUnreadCount(String person) {
+        String where=String.format("{'tuple.person':'%s'}",person);
+        long unread = home.tupleCount(_COL_NAME_MESSAGE_UNREDS, where);
+        return unread;
     }
 
 

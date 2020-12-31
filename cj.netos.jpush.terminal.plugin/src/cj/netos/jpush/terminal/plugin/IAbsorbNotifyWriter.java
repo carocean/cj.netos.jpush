@@ -9,6 +9,6 @@ public interface IAbsorbNotifyWriter {
 
     String getSenderNick(String person) throws CircuitException;
 
-    void checkAndSendAbsorbNotify(String receiverPerson, String receiverNick);
+    void checkAndSendAbsorbNotify(String receiverPerson, String receiverNick) throws CircuitException;
 
 }

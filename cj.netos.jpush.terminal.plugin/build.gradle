@@ -21,6 +21,11 @@ repositories {
 dependencies {
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    compile group: 'commons-httpclient', name: 'commons-httpclient', version: '3.1'
+    compile group: 'uk.org.lidalia', name: 'slf4j-test', version: '1.0.0-jdk6'
+    compile group: 'com.google.code.findbugs', name: 'annotations', version: '2.0.3'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.1.4'
     compile group: 'cj.studio.gateway2', name: 'cj.studio.ecm.net', version: ref_cj_studio_ecm_net_version
     compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.mongodb', version: ref_cj_studio_orm_mongodb
     compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.12.1'
@@ -42,8 +47,8 @@ task copyReferences(type: Copy) {
                 'snakeyaml-*.jar',
                 'cj.lns.chip.sos.cube-*.jar', 'mongodb-driver-*.jar', 'bson-*.jar',
                 'cj.netos.jpush.corelib-*.jar',
-                'jedis-*.jar','cj.studio.orm.redis-*.jar','commons-pool2-*.jar'
-
+                'jedis-*.jar','cj.studio.orm.redis-*.jar','commons-pool2-*.jar',
+                'commons-httpclient-*.jar','slf4j-api-*.jar','annotations-2.0.3.jar','jackson-*.jar'
     }
     into 'src/cj/references'
 }
