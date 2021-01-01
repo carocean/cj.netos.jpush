@@ -98,7 +98,7 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         }
         String brand = device.substring(0, pos);
         //保存
-//        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.brand':'%s'}", person, brand));
+        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.brand':'%s'}", person, brand));
         Map<String, String> map = new HashMap<>();
         map.put("person", person);
         map.put("device", device);
