@@ -3,6 +3,7 @@ package cj.netos.jpush.terminal;
 import cj.netos.jpush.EndPort;
 import cj.netos.jpush.IJPushServiceProvider;
 import cj.netos.jpush.IPersistenceMessageService;
+import cj.studio.ecm.CJSystem;
 import cj.studio.ecm.net.CircuitException;
 import io.netty.channel.Channel;
 
@@ -69,14 +70,19 @@ public class EndPortContainer implements IEndPortContainer {
             //用户由空上线时首先到插件中检查未读消息并发终结点发送完后再绑定消费
             persistenceMessageService.downstream(endPort);
         }
+
         personEndPorts.addEndPort(endPort);
         try {
-            rabbitMQConsumer.bindEndPort(personEndPorts);
             if (!personEndPorts.isConsumed()) {
+                rabbitMQConsumer.bindEndPort(personEndPorts);
                 rabbitMQConsumer.consumePersonQueue(personEndPorts);
             }
         } catch (IOException e) {
             throw new CircuitException("500", e);
+        }
+
+        if (persistenceMessageService != null) {
+            persistenceMessageService.checkAndUpdateBuddyDevice(endPort);
         }
         return endPort;
     }
@@ -127,9 +133,12 @@ public class EndPortContainer implements IEndPortContainer {
             return;
         }
         personEndPorts.removeEndPort(person, device);
-//        if (personEndPorts.isEmpty()) {//千万不要移除用户终结点，用它来判断是否在通知模式下消费mq
-//            endPorts.remove(person);
-//        }
+
+        if (personEndPorts.isEmpty()) {
+            endPorts.remove(person);
+        }
+
+        persistenceMessageService.removeBuddyDevice(theEndPort);
     }
 
     private void noNotificationOffline(EndPort theEndPort) throws CircuitException {

@@ -106,6 +106,17 @@ public class PersistenceMessageService extends AbstractService implements IPersi
         home.saveDoc(_COL_NAME_MESSAGE_DEVICE, new TupleDocument<>(map));
     }
 
+    @Override
+    public void removeBuddyDevice(EndPort endPort) {
+        String device = endPort.getDevice();
+        String person = endPort.getPerson();
+        int pos = device.indexOf("://");
+        if (pos < 0) {
+            return;
+        }
+        home.deleteDocs(_COL_NAME_MESSAGE_DEVICE, String.format("{'tuple.person':'%s','tuple.device':'%s'}", person, device));
+    }
+
     private synchronized void totalAdd(String person) {
         boolean exists = home.tupleCount(_COL_NAME_MESSAGE_TOTAL, String.format("{'tuple.person':'%s'}", person)) > 0;
         if (exists) {

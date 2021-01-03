@@ -256,9 +256,6 @@ public class RabbitMQConsumer implements IRabbitMQConsumer {
                 } else {
                     for (EndPort endPort : personEndPorts.endPorts()) {
                         endPort.writeFrame(frame.copy());
-                        if (persistenceMessageService != null) {
-                            persistenceMessageService.checkAndUpdateBuddyDevice(endPort);
-                        }
                     }
                 }
                 frame.dispose();

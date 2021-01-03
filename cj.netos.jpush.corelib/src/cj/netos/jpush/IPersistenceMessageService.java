@@ -14,4 +14,6 @@ public interface IPersistenceMessageService {
      */
     void checkAndUpdateBuddyDevice(EndPort endPort);
 
+    void removeBuddyDevice(EndPort theEndPort);
+
 }
