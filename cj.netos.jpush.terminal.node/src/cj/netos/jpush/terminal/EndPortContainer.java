@@ -67,6 +67,12 @@ public class EndPortContainer implements IEndPortContainer {
             //用户由空上线时首先到插件中检查未读消息并发终结点发送完后再绑定消费
             persistenceMessageService.downstream(endPort);
         } else if (personEndPorts.isEmpty()) {
+            try{//第一个上线则清空缓存的mq
+                rabbitMQConsumer.unbindPerson(personEndPorts);
+                rabbitMQConsumer.stopConsumePersonQueue(personEndPorts);
+            }catch (Exception e){
+                CJSystem.logging().error(getClass(),e);
+            }
             //用户由空上线时首先到插件中检查未读消息并发终结点发送完后再绑定消费
             persistenceMessageService.downstream(endPort);
         }
