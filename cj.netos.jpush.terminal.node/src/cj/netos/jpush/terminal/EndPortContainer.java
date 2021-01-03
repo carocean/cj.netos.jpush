@@ -87,9 +87,7 @@ public class EndPortContainer implements IEndPortContainer {
             throw new CircuitException("500", e);
         }
 
-        if (persistenceMessageService != null) {
-            persistenceMessageService.checkAndUpdateBuddyDevice(endPort);
-        }
+        persistenceMessageService.checkAndUpdateBuddyDevice(endPort);
         return endPort;
     }
 
@@ -140,11 +138,10 @@ public class EndPortContainer implements IEndPortContainer {
         }
         personEndPorts.removeEndPort(person, device);
 
-        if (personEndPorts.isEmpty()) {
-            endPorts.remove(person);
-        }
+        //        if (personEndPorts.isEmpty()) {//千万不要移除用户终结点，用它来判断是否在通知模式下消费mq
+//            endPorts.remove(person);
+//        }
 
-        persistenceMessageService.removeBuddyDevice(theEndPort);
     }
 
     private void noNotificationOffline(EndPort theEndPort) throws CircuitException {
