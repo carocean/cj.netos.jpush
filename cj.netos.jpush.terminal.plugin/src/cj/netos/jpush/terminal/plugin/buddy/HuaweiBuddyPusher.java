@@ -68,6 +68,7 @@ public class HuaweiBuddyPusher implements IBuddyPusher, IServiceAfter {
                 "        \"android\": {\n" +
                 "            \"notification\": {\n" +
                 "                \"default_sound\":true,\n"+
+                "                \"importance\":\"HIGH\",\n"+
                 "                \"click_action\": {\n" +
                 "                    \"type\": 3,\n" +
                 "                    \"url\": \"\"\n" +
